@@ -1,3 +1,17 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/mission-control")({
+  head: () => ({
+    meta: [
+      { title: 'Mission Control — Merqato' },
+      { name: "description", content: 'Monitor your agents, missions, and reservations in Mission Control.' },
+      { property: "og:title", content: 'Mission Control — Merqato' },
+      { property: "og:description", content: 'Monitor your agents, missions, and reservations in Mission Control.' },
+    ],
+  }),
+  component: MissionControl,
+});
+
 import { Gauge } from "lucide-react";
 import { MISSION_CONTROL_METRICS } from "@/lib/site-data";
 import { Section, Eyebrow, HeroBackdrop } from "@/components/site/Section";

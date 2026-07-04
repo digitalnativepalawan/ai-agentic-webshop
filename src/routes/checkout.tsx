@@ -1,5 +1,19 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/checkout")({
+  head: () => ({
+    meta: [
+      { title: 'Checkout — Merqato' },
+      { name: "description", content: 'Human-approved checkout for AI operator missions and nomad stays.' },
+      { property: "og:title", content: 'Checkout — Merqato' },
+      { property: "og:description", content: 'Human-approved checkout for AI operator missions and nomad stays.' },
+    ],
+  }),
+  validateSearch: (s: Record<string, unknown>) => ({ operatorId: typeof s.operatorId === "string" ? s.operatorId : undefined }),
+  component: Checkout,
+});
+
 import { useMemo, useState } from "react";
-import { useLocation } from "@tanstack/react-router";
 import {
   Check,
   Clock,
@@ -31,8 +45,7 @@ const PROGRESS: ProcessStep[] = [
 ];
 
 function Checkout() {
-  const location = useLocation();
-  const state = (location.state ?? {}) as { operatorId?: string };
+  const state = Route.useSearch();
   const [copied, setCopied] = useState(false);
 
   const operator = useMemo(

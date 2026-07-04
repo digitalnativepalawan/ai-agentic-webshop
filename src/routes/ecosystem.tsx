@@ -1,3 +1,17 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/ecosystem")({
+  head: () => ({
+    meta: [
+      { title: 'Ecosystem Partnerships — Merqato' },
+      { name: "description", content: 'Partner with the Merqato ecosystem to co-build agentic experiences in Palawan.' },
+      { property: "og:title", content: 'Ecosystem Partnerships — Merqato' },
+      { property: "og:description", content: 'Partner with the Merqato ecosystem to co-build agentic experiences in Palawan.' },
+    ],
+  }),
+  component: Ecosystem,
+});
+
 import { Check, Users2 } from "lucide-react";
 import {
   PARTNERSHIPS,

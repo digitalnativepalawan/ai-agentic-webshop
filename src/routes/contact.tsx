@@ -1,3 +1,17 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/contact")({
+  head: () => ({
+    meta: [
+      { title: 'Contact — Merqato' },
+      { name: "description", content: 'Talk to the Merqato team about operators, stays, or ecosystem partnerships.' },
+      { property: "og:title", content: 'Contact — Merqato' },
+      { property: "og:description", content: 'Talk to the Merqato team about operators, stays, or ecosystem partnerships.' },
+    ],
+  }),
+  component: Contact,
+});
+
 import { useState } from "react";
 import { Check, Mail, MapPin, MessageCircle } from "lucide-react";
 import { BRAND } from "@/lib/site-data";

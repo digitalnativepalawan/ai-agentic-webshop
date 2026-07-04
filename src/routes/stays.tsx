@@ -1,3 +1,17 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/stays")({
+  head: () => ({
+    meta: [
+      { title: 'Nomad Stays — Merqato' },
+      { name: "description", content: 'Curated Palawan stays designed for remote founders, teams, and long-haul nomads.' },
+      { property: "og:title", content: 'Nomad Stays — Merqato' },
+      { property: "og:description", content: 'Curated Palawan stays designed for remote founders, teams, and long-haul nomads.' },
+    ],
+  }),
+  component: Stays,
+});
+
 import { Bot, HelpCircle, Info, Radar, UserCheck, Wifi } from "lucide-react";
 import {
   STAYS,

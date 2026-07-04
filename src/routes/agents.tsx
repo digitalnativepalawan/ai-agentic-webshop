@@ -1,3 +1,17 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/agents")({
+  head: () => ({
+    meta: [
+      { title: 'AI Operators — Merqato' },
+      { name: "description", content: 'Deploy AI operators for hospitality: concierge, revenue, ops, marketing, and more.' },
+      { property: "og:title", content: 'AI Operators — Merqato' },
+      { property: "og:description", content: 'Deploy AI operators for hospitality: concierge, revenue, ops, marketing, and more.' },
+    ],
+  }),
+  component: Operators,
+});
+
 import { useState } from "react";
 import { Code2 } from "lucide-react";
 import {

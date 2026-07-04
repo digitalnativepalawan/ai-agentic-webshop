@@ -1,3 +1,17 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: 'Merqato — Agentic Commerce for Hospitality' },
+      { name: "description", content: 'AI operators, nomad stays, and Palawan-native ecosystem — booked by agents, approved by humans.' },
+      { property: "og:title", content: 'Merqato — Agentic Commerce for Hospitality' },
+      { property: "og:description", content: 'AI operators, nomad stays, and Palawan-native ecosystem — booked by agents, approved by humans.' },
+    ],
+  }),
+  component: Home,
+});
+
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Palmtree } from "lucide-react";
 import {
