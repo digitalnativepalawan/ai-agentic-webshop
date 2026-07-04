@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
+import { NavLink } from "./NavLink";
 import { Menu, UserRound, X } from "lucide-react";
 import { NAV } from "@/lib/site-data";
 import { ThemeToggle } from "./ThemeToggle";
