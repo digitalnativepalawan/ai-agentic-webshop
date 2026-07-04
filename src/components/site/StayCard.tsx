@@ -43,7 +43,7 @@ export function StayCard({ stay }: { stay: Stay }) {
         </p>
         <Link
           to="/checkout"
-          state={{ stayId: stay.id }}
+          search={{ stayId: stay.id }}
           className="focus-ring group flex w-full items-center justify-center gap-2 rounded-lg bg-gold px-4 py-3 font-mono text-[11px] uppercase tracking-[0.12em] font-medium text-[#0b0b0b] transition-colors hover:bg-gold-soft"
         >
           Request Availability

@@ -60,7 +60,7 @@ export function OperatorCard({ operator, compact = false }: Props) {
         <span className="text-[13px] text-gold">{priceLabel}</span>
         <Link
           to="/checkout"
-          state={{ operatorId: operator.id }}
+          search={{ operatorId: operator.id }}
           className="focus-ring inline-flex items-center gap-1.5 rounded-md border border-gold/30 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-gold transition-colors hover:border-gold hover:bg-gold/10"
         >
           {isSetup ? "Request setup" : "View details"}
