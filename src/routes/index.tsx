@@ -1,24 +1,160 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: 'Merqato — Agentic Commerce for Hospitality' },
+      { name: "description", content: 'AI operators, nomad stays, and Palawan-native ecosystem — booked by agents, approved by humans.' },
+      { property: "og:title", content: 'Merqato — Agentic Commerce for Hospitality' },
+      { property: "og:description", content: 'AI operators, nomad stays, and Palawan-native ecosystem — booked by agents, approved by humans.' },
+    ],
+  }),
+  component: Home,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Palmtree } from "lucide-react";
+import {
+  BUY_WITH_CONFIDENCE,
+  FEATURED_OPERATOR_IDS,
+  HERO_BADGES,
+  OPERATORS,
+  WHAT_YOU_CAN_DO,
+} from "@/lib/site-data";
+import { Section, Eyebrow, HeroBackdrop } from "@/components/site/Section";
+import { StatusChip } from "@/components/site/StatusChip";
+import { CTAButton } from "@/components/site/CTAButton";
+import { OfferCard } from "@/components/site/OfferCard";
+import { OperatorCard } from "@/components/site/OperatorCard";
+import { TrustBlock } from "@/components/site/TrustBlock";
+import { MissionControlPreview } from "@/components/site/MissionControlPreview";
+import { Icon } from "@/components/site/Icon";
+
+function Home() {
+  const featured = FEATURED_OPERATOR_IDS.map((id) => OPERATORS.find((o) => o.id === id)!);
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <>
+      {/* HERO */}
+      <div className="relative">
+        <HeroBackdrop />
+        <div className="shell pb-6 pt-10 sm:pt-14">
+          <div className="mb-8 flex flex-wrap gap-2.5">
+            {HERO_BADGES.map((b) => (
+              <StatusChip key={b.label} tone="outline" icon={<Icon name={b.icon} size={13} className="text-gold" />}>
+                {b.label}
+              </StatusChip>
+            ))}
+          </div>
+
+          <h1 className="max-w-4xl font-display text-[clamp(2.6rem,7vw,5.2rem)] font-medium leading-[0.98] tracking-tight animate-fade-up">
+            Built for <span className="text-gold">people.</span>
+            <br />
+            Structured for <span className="text-crimson">agents.</span>
+          </h1>
+
+          <p className="mt-6 font-display text-[clamp(1.3rem,3vw,1.9rem)] text-ink/90">
+            The marketplace where AI agents can safely shop.
+          </p>
+
+          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted">
+            merQato.digital helps people and AI agents discover, compare, and request AI Operators,
+            Palawan stays, and digital infrastructure — with human approval at every step.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <CTAButton to="/agents" variant="primary">
+              Browse AI Operators
+            </CTAButton>
+            <CTAButton to="/stays" variant="secondary">
+              Book a Stay
+            </CTAButton>
+            <CTAButton to="/mission-control" variant="ghost">
+              See Mission Control
+            </CTAButton>
+          </div>
+
+          <div className="mt-10 flex items-center gap-3">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gold/25 text-gold">
+              <Palmtree size={16} />
+            </span>
+            <div>
+              <p className="eyebrow !mb-0">Built in Palawan</p>
+              <p className="text-[13px] text-muted">Local team. Local partners. Global mindset.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* WHAT YOU CAN DO HERE */}
+      <Section>
+        <Eyebrow>What you can do here</Eyebrow>
+        <div className="grid gap-5 md:grid-cols-3">
+          {WHAT_YOU_CAN_DO.map((item) => (
+            <OfferCard key={item.title} {...item} />
+          ))}
+        </div>
+      </Section>
+
+      {/* FEATURED AI OPERATORS */}
+      <Section className="!pt-2">
+        <div className="mb-6 flex items-center justify-between">
+          <Eyebrow>Featured AI Operators</Eyebrow>
+          <Link
+            to="/agents"
+            className="focus-ring -mt-4 inline-flex items-center gap-1.5 text-[13px] text-gold hover:text-gold-soft"
+          >
+            View all operators <ArrowRight size={14} />
+          </Link>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {featured.map((op) => (
+            <OperatorCard key={op.id} operator={op} compact />
+          ))}
+        </div>
+      </Section>
+
+      {/* BUY WITH CONFIDENCE */}
+      <Section className="!pt-2">
+        <Eyebrow>Buy with confidence</Eyebrow>
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          {BUY_WITH_CONFIDENCE.map((t) => (
+            <TrustBlock key={t.title} point={t} />
+          ))}
+        </div>
+      </Section>
+
+      {/* MISSION CONTROL PREVIEW */}
+      <Section className="!pt-2">
+        <div className="mb-6 flex items-center justify-between">
+          <Eyebrow>Mission Control preview</Eyebrow>
+          <Link
+            to="/mission-control"
+            className="focus-ring -mt-4 inline-flex items-center gap-1.5 text-[13px] text-gold hover:text-gold-soft"
+          >
+            Explore Mission Control <ArrowRight size={14} />
+          </Link>
+        </div>
+        <div className="card grid items-center gap-8 p-6 lg:grid-cols-[0.9fr_1.6fr] lg:p-8">
+          <div>
+            <h2 className="font-display text-[clamp(1.8rem,4vw,2.6rem)] font-medium leading-tight">
+              Run operations.
+              <br />
+              See what matters.
+            </h2>
+            <p className="mt-4 text-[14px] leading-relaxed text-muted">
+              Mission Control gives you real-time visibility across bookings, AI operators, guests,
+              and performance.
+            </p>
+            <div className="mt-6">
+              <CTAButton to="/mission-control" variant="ghost">
+                See it in action
+              </CTAButton>
+            </div>
+          </div>
+          <MissionControlPreview />
+        </div>
+      </Section>
+    </>
   );
 }

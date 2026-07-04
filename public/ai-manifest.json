@@ -1,0 +1,53 @@
+{
+  "$schema": "https://merqato.digital/schemas/ai-manifest.schema.json",
+  "manifestVersion": "0.1",
+  "name": "merQato.digital",
+  "description": "Built for people. Structured for agents. The marketplace where AI agents can safely shop, with human approval at every step.",
+  "url": "https://merqato.digital",
+  "location": "San Vicente, Palawan, Philippines",
+  "aiReadable": true,
+  "humanApprovalRequired": true,
+  "endpoints": {
+    "catalog": "/merqato-catalog.json",
+    "commerce": "/agent-commerce.json",
+    "checkout": "/checkout",
+    "contact": "/contact"
+  },
+  "routes": [
+    { "path": "/", "name": "Home" },
+    { "path": "/agents", "name": "AI Operators" },
+    { "path": "/stays", "name": "Nomad Stays" },
+    { "path": "/ecosystem", "name": "Ecosystem Partnerships" },
+    { "path": "/checkout", "name": "Agentic Checkout" },
+    { "path": "/mission-control", "name": "Mission Control" },
+    { "path": "/contact", "name": "Contact" }
+  ],
+  "capabilities": {
+    "allowed": [
+      "browse",
+      "compare",
+      "prepare_checkout",
+      "request_availability",
+      "request_setup",
+      "request_quote",
+      "view_status"
+    ],
+    "requiresHumanApproval": [
+      "final_payment",
+      "confirmed_booking",
+      "deployment",
+      "account_connection",
+      "public_posting",
+      "partnership_approval"
+    ]
+  },
+  "policies": {
+    "agentPolicy": "/agent-policy",
+    "privacyPolicy": "/privacy",
+    "termsOfService": "/terms"
+  },
+  "contact": {
+    "email": "hello@merqato.digital",
+    "channel": "WhatsApp during PH business hours"
+  }
+}
