@@ -9,7 +9,7 @@ export const Route = createFileRoute("/checkout")({
       { property: "og:description", content: 'Human-approved checkout for AI operator missions and nomad stays.' },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>) => ({ operatorId: typeof s.operatorId === "string" ? s.operatorId : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ operatorId: typeof s.operatorId === "string" ? s.operatorId : undefined, stayId: typeof s.stayId === "string" ? s.stayId : undefined }),
   component: Checkout,
 });
 
