@@ -13,7 +13,7 @@ const CAPABILITIES = [
   { icon: "Eye", title: "Partner visibility", body: "Share the right metrics without exposing admin-only data." },
 ];
 
-export default function MissionControl() {
+function MissionControl() {
   return (
     <>
       {/* HERO */}

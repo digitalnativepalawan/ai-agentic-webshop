@@ -16,7 +16,7 @@ import { TrustBlock } from "@/components/site/TrustBlock";
 import { MissionControlPreview } from "@/components/site/MissionControlPreview";
 import { Icon } from "@/components/site/Icon";
 
-export default function Home() {
+function Home() {
   const featured = FEATURED_OPERATOR_IDS.map((id) => OPERATORS.find((o) => o.id === id)!);
 
   return (

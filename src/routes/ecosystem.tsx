@@ -18,7 +18,7 @@ const HERO_BADGES = [
   { icon: "Lock", label: "Partner-safe by design" },
 ];
 
-export default function Ecosystem() {
+function Ecosystem() {
   return (
     <>
       {/* HERO */}

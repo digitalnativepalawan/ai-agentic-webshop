@@ -16,7 +16,7 @@ import { TrustBlock } from "@/components/site/TrustBlock";
 import { CTAButton } from "@/components/site/CTAButton";
 import { Icon } from "@/components/site/Icon";
 
-export default function Operators() {
+function Operators() {
   const [cat, setCat] = useState<OperatorCategory | "all">("all");
   const operators = cat === "all" ? OPERATORS : OPERATORS.filter((o) => o.category === cat);
 

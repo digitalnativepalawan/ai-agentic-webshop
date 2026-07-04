@@ -7,7 +7,7 @@ import { CTAButton } from "@/components/site/CTAButton";
 
 const TOPICS = ["AI Operators", "Nomad Stays", "Ecosystem Partnership", "Mission Control setup"];
 
-export default function Contact() {
+function Contact() {
   const [sent, setSent] = useState(false);
   const [topic, setTopic] = useState(TOPICS[0]);
   const [form, setForm] = useState({ name: "", email: "", message: "" });

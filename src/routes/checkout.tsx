@@ -30,7 +30,7 @@ const PROGRESS: ProcessStep[] = [
   { index: 6, title: "Mission Created", body: "", icon: "" },
 ];
 
-export default function Checkout() {
+function Checkout() {
   const location = useLocation();
   const state = (location.state ?? {}) as { operatorId?: string };
   const [copied, setCopied] = useState(false);

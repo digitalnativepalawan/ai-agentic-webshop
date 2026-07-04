@@ -24,7 +24,7 @@ const GOOD_HANDS = [
   { icon: "BedDouble", title: "Built for long", body: "stays" },
 ];
 
-export default function Stays() {
+function Stays() {
   return (
     <>
       {/* HERO */}
