@@ -1,0 +1,68 @@
+{
+  "$schema": "https://merqato.digital/schemas/agent-commerce.schema.json",
+  "spec": "merqato-agent-commerce/0.1",
+  "generatedFor": "AI agents and autonomous shopping assistants",
+  "business": {
+    "name": "merQato.digital",
+    "legalName": "merQato Digital",
+    "location": "San Vicente, Palawan, Philippines",
+    "mission": "The marketplace where people and AI agents safely discover, compare, and request AI Operators, Palawan stays, and digital infrastructure.",
+    "contact": {
+      "email": "hello@merqato.digital",
+      "checkoutPath": "/checkout",
+      "contactPath": "/contact"
+    }
+  },
+  "humanApprovalRequired": true,
+  "pricingModel": {
+    "currency": "PHP",
+    "models": [
+      "monthly_subscription",
+      "one_time_setup",
+      "per_day",
+      "per_week",
+      "per_stay",
+      "per_month",
+      "custom_quote"
+    ],
+    "note": "All prices are indicative. Final pricing is confirmed after human review."
+  },
+  "allowedAgentActions": [
+    { "action": "browse", "description": "Read offers, categories, and pricing." },
+    { "action": "compare", "description": "Compare offers across categories." },
+    { "action": "prepare_checkout", "description": "Assemble an order for human review." },
+    { "action": "request_availability", "description": "Ask for stay availability on given dates." },
+    { "action": "request_setup", "description": "Request operator setup and onboarding." },
+    { "action": "request_quote", "description": "Request a custom partnership quote." },
+    { "action": "view_status", "description": "Poll the status of a prepared order." }
+  ],
+  "disallowedWithoutHumanApproval": [
+    { "action": "final_payment", "reason": "Payments are only executed after human approval." },
+    { "action": "confirmed_booking", "reason": "Bookings require human confirmation." },
+    { "action": "deployment", "reason": "Operators are deployed by humans after review." },
+    { "action": "account_connection", "reason": "Connecting third-party accounts requires human consent." },
+    { "action": "public_posting", "reason": "Public posts require human approval before publishing." },
+    { "action": "partnership_approval", "reason": "Partnerships are approved by the Merqato team." }
+  ],
+  "checkout": {
+    "flow": ["select", "configure", "verify", "human_approval", "pay_or_reserve", "mission_created"],
+    "averageApprovalTime": "2-4 business hours",
+    "requestApproval": {
+      "method": "POST",
+      "endpoint": "/v1/checkout/request-approval",
+      "status": "not_live",
+      "note": "Endpoint is documented for future integration; no live API keys yet."
+    },
+    "checkStatus": {
+      "method": "GET",
+      "endpoint": "/v1/checkout/status/{order_id}",
+      "status": "not_live"
+    }
+  },
+  "categories": [
+    { "id": "ai-operators", "path": "/agents", "label": "AI Operators" },
+    { "id": "nomad-stays", "path": "/stays", "label": "Nomad Stays" },
+    { "id": "ecosystem-partnerships", "path": "/ecosystem", "label": "Ecosystem Partnerships" },
+    { "id": "mission-control", "path": "/mission-control", "label": "Mission Control" }
+  ]
+}
