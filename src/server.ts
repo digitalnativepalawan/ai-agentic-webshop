@@ -48,6 +48,12 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      // Agent-facing JSON API (/v1/checkout/*) is handled before SSR. Loaded
+      // lazily so the normal page path never pulls in the service-role client.
+      const { handleAgentApi } = await import("./lib/agent-api.server");
+      const agentResponse = await handleAgentApi(request);
+      if (agentResponse) return withSecurityHeaders(agentResponse);
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return withSecurityHeaders(await normalizeCatastrophicSsrResponse(response));

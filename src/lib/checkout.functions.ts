@@ -4,19 +4,9 @@
 // and persists the order. The service-role code lives behind dynamic import()s
 // so it is stripped from the client bundle along with the handler bodies.
 import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
 
 import { resolveOrderDraft } from "./checkout-rules";
-
-const CreateApprovalInput = z.object({
-  offerId: z.string().min(1).max(100),
-  requesterName: z.string().trim().min(1).max(200).optional(),
-  requesterEmail: z.string().trim().email().max(320).optional(),
-  notes: z.string().trim().max(2000).optional(),
-  channel: z.enum(["web", "agent"]).default("web"),
-});
-
-export type CreateApprovalInputType = z.input<typeof CreateApprovalInput>;
+import { CreateApprovalInput, GetOrderStatusInput } from "./checkout-schemas";
 
 /**
  * Prepare an order for human approval. Allowed for humans and agents alike (the
@@ -41,8 +31,6 @@ export const createApprovalRequest = createServerFn({ method: "POST" })
       userId,
     });
   });
-
-const GetOrderStatusInput = z.object({ orderId: z.string().uuid() });
 
 /** Poll an order's approval status by its id (the token returned at creation). */
 export const getOrderStatus = createServerFn({ method: "GET" })
