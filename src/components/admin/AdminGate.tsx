@@ -1,33 +1,59 @@
-import { useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { verifyAdminPasskey } from "@/lib/operators.functions";
+import { useOperatorCatalog } from "@/context/OperatorCatalogContext";
 
-const SESSION_KEY = "merqato.operator-admin.unlocked";
-const configuredPasskey = import.meta.env.VITE_OPERATOR_ADMIN_PASSKEY as string | undefined;
+const SESSION_KEY = "merqato.operator-admin.passkey";
+
+type AdminAuthValue = { passkey: string; lock: () => void };
+const AdminAuthContext = createContext<AdminAuthValue | null>(null);
+
+export function useAdminAuth() {
+  const ctx = useContext(AdminAuthContext);
+  if (!ctx) throw new Error("useAdminAuth must be inside AdminGate");
+  return ctx;
+}
 
 export function AdminGate({ children }: { children: ReactNode }) {
-  const [unlocked, setUnlocked] = useState(() =>
-    typeof window !== "undefined" && sessionStorage.getItem(SESSION_KEY) === "yes",
+  const verify = useServerFn(verifyAdminPasskey);
+  const catalog = useOperatorCatalog();
+  const [passkey, setPasskey] = useState<string | null>(() =>
+    typeof window !== "undefined" ? sessionStorage.getItem(SESSION_KEY) : null,
   );
-  const [passkey, setPasskey] = useState("");
+  const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  if (unlocked) return <>{children}</>;
+  if (passkey) {
+    return (
+      <AdminAuthContext.Provider value={{ passkey, lock: () => { sessionStorage.removeItem(SESSION_KEY); setPasskey(null); } }}>
+        {children}
+      </AdminAuthContext.Provider>
+    );
+  }
 
   return (
     <div className="shell flex min-h-[70vh] items-center justify-center py-16">
       <form
         className="card w-full max-w-md p-7"
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
-          if (!configuredPasskey) {
-            setError("Admin passkey is not configured.");
-            return;
+          setBusy(true);
+          setError("");
+          try {
+            const { ok } = await verify({ data: { passkey: input } });
+            if (!ok) {
+              setError("Incorrect passkey");
+              return;
+            }
+            sessionStorage.setItem(SESSION_KEY, input);
+            await catalog.loadAdmin(input);
+            setPasskey(input);
+          } catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to verify");
+          } finally {
+            setBusy(false);
           }
-          if (passkey !== configuredPasskey) {
-            setError("Incorrect passkey");
-            return;
-          }
-          sessionStorage.setItem(SESSION_KEY, "yes");
-          setUnlocked(true);
         }}
       >
         <p className="eyebrow">Admin access</p>
@@ -39,21 +65,19 @@ export function AdminGate({ children }: { children: ReactNode }) {
           className="input mt-6 w-full"
           type="password"
           inputMode="numeric"
-          value={passkey}
-          onChange={(event) => setPasskey(event.target.value)}
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
           placeholder="Passkey"
           autoFocus
         />
         {error && <p className="mt-2 text-sm text-crimson">{error}</p>}
-        <button className="focus-ring mt-4 w-full rounded-md bg-gold px-4 py-3 text-sm font-medium text-[#0b0b0b]">
-          Unlock admin
+        <button
+          disabled={busy}
+          className="focus-ring mt-4 w-full rounded-md bg-gold px-4 py-3 text-sm font-medium text-[#0b0b0b] disabled:opacity-60"
+        >
+          {busy ? "Verifying…" : "Unlock admin"}
         </button>
       </form>
     </div>
   );
-}
-
-export function lockOperatorAdmin() {
-  sessionStorage.removeItem(SESSION_KEY);
-  window.location.reload();
 }
