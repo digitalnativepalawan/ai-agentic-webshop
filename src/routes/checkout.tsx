@@ -21,7 +21,6 @@ import {
   Database,
   FileLock2,
   Lock,
-  MessageCircle,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
@@ -31,8 +30,8 @@ import type { ProcessStep } from "@/lib/types";
 import { Section, Eyebrow, HeroBackdrop } from "@/components/site/Section";
 import { StatusChip } from "@/components/site/StatusChip";
 import { CheckoutSteps } from "@/components/site/CheckoutSteps";
-import { CTAButton } from "@/components/site/CTAButton";
 import { TrustBlock } from "@/components/site/TrustBlock";
+import { ApprovalActions } from "@/components/site/ApprovalActions";
 import { Icon } from "@/components/site/Icon";
 
 const PROGRESS: ProcessStep[] = [
@@ -191,35 +190,7 @@ function Checkout() {
               </div>
             </div>
 
-            <div className="mt-4 space-y-2.5">
-              <CTAButton variant="primary" full onClick={() => undefined}>
-                Request approval
-              </CTAButton>
-              <button
-                type="button"
-                className="focus-ring flex w-full items-center justify-center gap-2 rounded-lg border border-gold/35 px-4 py-3 font-mono text-[12px] uppercase tracking-[0.12em] text-gold transition-colors hover:border-gold hover:bg-gold/10"
-              >
-                <MessageCircle size={15} /> Send to WhatsApp
-              </button>
-              <div className="grid grid-cols-2 gap-2.5">
-                <button
-                  type="button"
-                  className="focus-ring rounded-lg border border-line/30 px-3 py-2.5 font-mono text-[11px] uppercase tracking-[0.1em] text-muted transition-colors hover:border-gold/40 hover:text-gold"
-                >
-                  Prepare checkout
-                </button>
-                <button
-                  type="button"
-                  className="focus-ring rounded-lg border border-line/30 px-3 py-2.5 font-mono text-[11px] uppercase tracking-[0.1em] text-muted transition-colors hover:border-gold/40 hover:text-gold"
-                >
-                  Schedule setup call
-                </button>
-              </div>
-            </div>
-
-            <p className="mt-4 flex items-center justify-center gap-1.5 text-[11.5px] text-faint">
-              <Lock size={12} /> Checkout is locked until approval is complete.
-            </p>
+            <ApprovalActions offerId={operator.id} />
           </div>
         </div>
       </Section>

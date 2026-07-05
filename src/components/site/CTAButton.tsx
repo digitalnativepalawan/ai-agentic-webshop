@@ -14,6 +14,7 @@ interface Props {
   full?: boolean;
   icon?: ReactNode;
   className?: string;
+  disabled?: boolean;
 }
 
 const base =
@@ -37,8 +38,11 @@ export function CTAButton({
   full = false,
   icon,
   className = "",
+  disabled = false,
 }: Props) {
-  const cls = `${base} ${variants[variant]} ${full ? "w-full" : ""} ${className}`;
+  const cls = `${base} ${variants[variant]} ${full ? "w-full" : ""} ${
+    disabled ? "pointer-events-none opacity-60" : ""
+  } ${className}`;
   const inner = (
     <>
       {icon}
@@ -62,7 +66,7 @@ export function CTAButton({
     );
   }
   return (
-    <button type="button" onClick={onClick} className={`group ${cls}`}>
+    <button type="button" onClick={onClick} disabled={disabled} className={`group ${cls}`}>
       {inner}
     </button>
   );

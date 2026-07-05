@@ -50,13 +50,23 @@
     "requestApproval": {
       "method": "POST",
       "endpoint": "/v1/checkout/request-approval",
-      "status": "not_live",
-      "note": "Endpoint is documented for future integration; no live API keys yet."
+      "status": "live",
+      "contentType": "application/json",
+      "body": {
+        "offerId": "string (required, e.g. guest-concierge-ai)",
+        "requesterName": "string (optional)",
+        "requesterEmail": "string (optional)",
+        "notes": "string (optional)",
+        "channel": "agent"
+      },
+      "returns": "201 with { orderId, orderRef, status, offer, total, statusEndpoint }",
+      "note": "Creates an order in awaiting_human_approval. No payment is taken; a human reviews before anything is charged."
     },
     "checkStatus": {
       "method": "GET",
       "endpoint": "/v1/checkout/status/{order_id}",
-      "status": "not_live"
+      "status": "live",
+      "note": "Poll with the orderId returned by request-approval to see approval status."
     }
   },
   "categories": [
