@@ -108,7 +108,7 @@ export const listPublicOperators = createServerFn({ method: "GET" }).handler(asy
     process.env.SUPABASE_PUBLISHABLE_KEY!,
     { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
   );
-  const { data, error } = await client
+  const { data, error } = await (client as any)
     .from("operators")
     .select("*")
     .eq("active", true)
