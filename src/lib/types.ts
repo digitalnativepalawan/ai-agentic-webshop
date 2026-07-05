@@ -138,3 +138,20 @@ export interface CheckoutSummary {
   currency: Currency;
   status: "awaiting_human_approval";
 }
+
+/**
+ * Minimal, offer-agnostic pricing snapshot resolved from the catalog. This is
+ * the server-authoritative shape persisted with an order: the client/agent
+ * supplies only an offerId, never an amount, so prices cannot be tampered with.
+ */
+export interface OrderDraft {
+  offerId: string;
+  offerKind: OfferKind;
+  offerName: string;
+  plan: string;
+  lineItems: CheckoutLineItem[];
+  totalAmount: number;
+  currency: Currency;
+  /** true for partnership quotes where the price is settled by a human later. */
+  requiresQuote: boolean;
+}

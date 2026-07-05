@@ -1,4 +1,11 @@
-import type { AgentAction, CheckoutSummary, HumanGatedAction, Operator } from "./types";
+import type {
+  AgentAction,
+  CheckoutSummary,
+  HumanGatedAction,
+  Operator,
+  OrderDraft,
+} from "./types";
+import { OPERATORS, PARTNERSHIPS, STAYS } from "./site-data";
 
 /* ============================================================
    Human-in-the-loop rules for the whole marketplace.
@@ -78,4 +85,67 @@ export function buildCheckoutSummary(op: Operator): CheckoutSummary {
     currency: op.price.currency,
     status: "awaiting_human_approval",
   };
+}
+
+/** Collision-resistant order reference, e.g. ORD-26-07-8F3K2Q. */
+export function makeOrderRef(now: Date = new Date()): string {
+  const yy = String(now.getFullYear()).slice(2);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const rand = Array.from({ length: 6 }, () =>
+    "ABCDEFGHJKMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 31)],
+  ).join("");
+  return `ORD-${yy}-${mm}-${rand}`;
+}
+
+/**
+ * Resolve an offerId to its authoritative pricing straight from the catalog.
+ * The only trusted input from a client or agent is the offerId — every amount
+ * is derived here, server-side, so a caller can never dictate the total.
+ * Returns null for an unknown offer.
+ */
+export function resolveOrderDraft(offerId: string): OrderDraft | null {
+  const op = OPERATORS.find((o) => o.id === offerId);
+  if (op) {
+    const s = buildCheckoutSummary(op);
+    return {
+      offerId: op.id,
+      offerKind: op.kind,
+      offerName: op.name,
+      plan: s.plan,
+      lineItems: s.lineItems,
+      totalAmount: s.totalToday,
+      currency: s.currency,
+      requiresQuote: false,
+    };
+  }
+
+  const stay = STAYS.find((s) => s.id === offerId);
+  if (stay) {
+    return {
+      offerId: stay.id,
+      offerKind: stay.kind,
+      offerName: stay.name,
+      plan: stay.tagline,
+      lineItems: [{ label: stay.name, amount: stay.price.amount, currency: stay.price.currency }],
+      totalAmount: stay.price.amount,
+      currency: stay.price.currency,
+      requiresQuote: false,
+    };
+  }
+
+  const partnership = PARTNERSHIPS.find((p) => p.id === offerId);
+  if (partnership) {
+    return {
+      offerId: partnership.id,
+      offerKind: partnership.kind,
+      offerName: partnership.name,
+      plan: "Custom quote",
+      lineItems: [],
+      totalAmount: 0,
+      currency: "PHP",
+      requiresQuote: true,
+    };
+  }
+
+  return null;
 }
