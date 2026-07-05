@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      operators: {
+        Row: {
+          active: boolean
+          agent_readable: boolean
+          badges: Json
+          category: string
+          created_at: string
+          deployment_scope: Json
+          display_order: number
+          featured: boolean
+          human_approval_required: boolean
+          icon: string
+          id: string
+          included_services: Json
+          kind: string
+          name: string
+          price: Json
+          tagline: string
+          top_rated: boolean
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          agent_readable?: boolean
+          badges?: Json
+          category: string
+          created_at?: string
+          deployment_scope?: Json
+          display_order?: number
+          featured?: boolean
+          human_approval_required?: boolean
+          icon: string
+          id: string
+          included_services?: Json
+          kind: string
+          name: string
+          price: Json
+          tagline: string
+          top_rated?: boolean
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          agent_readable?: boolean
+          badges?: Json
+          category?: string
+          created_at?: string
+          deployment_scope?: Json
+          display_order?: number
+          featured?: boolean
+          human_approval_required?: boolean
+          icon?: string
+          id?: string
+          included_services?: Json
+          kind?: string
+          name?: string
+          price?: Json
+          tagline?: string
+          top_rated?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           channel: string
