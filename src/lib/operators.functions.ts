@@ -124,7 +124,7 @@ export const listAllOperators = createServerFn({ method: "POST" })
     requirePasskey(data.passkey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows, error } = await supabaseAdmin
-      .from("operators" as never)
+      .from("operators" as any)
       .select("*")
       .order("display_order", { ascending: true });
     if (error) throw new Error(error.message);
@@ -143,7 +143,7 @@ export const upsertOperator = createServerFn({ method: "POST" })
     requirePasskey(data.passkey);
     const op = data.operator;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("operators" as never).upsert({
+    const { error } = await supabaseAdmin.from("operators" as any).upsert({
       id: op.id,
       kind: op.kind,
       name: op.name,
@@ -160,7 +160,7 @@ export const upsertOperator = createServerFn({ method: "POST" })
       included_services: op.includedServices,
       active: op.active ?? true,
       display_order: op.displayOrder ?? 0,
-    } as never);
+    } as any);
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
@@ -172,7 +172,7 @@ export const deleteOperator = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     requirePasskey(data.passkey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("operators" as never).delete().eq("id", data.id);
+    const { error } = await supabaseAdmin.from("operators" as any).delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
