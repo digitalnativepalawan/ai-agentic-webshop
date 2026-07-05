@@ -1,91 +1,90 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { OPERATORS } from "@/lib/site-data";
-import type { Operator } from "@/lib/types";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  listPublicOperators,
+  listAllOperators,
+  upsertOperator,
+  deleteOperator as deleteOperatorFn,
+  type AdminOperator,
+} from "@/lib/operators.functions";
 
-const STORAGE_KEY = "merqato.operator-catalog.v1";
-type EditableOperator = Operator & { active?: boolean; displayOrder?: number };
-
-const KAPWA: EditableOperator = {
-  id: "kapwa-resort-backoffice",
-  kind: "operator",
-  name: "KAPWA",
-  icon: "Sparkles",
-  tagline: "An all-around AI back office for resorts — guest service, bookings, follow-up, reviews, marketing, reporting, and daily operations in one coordinated system.",
-  category: "hospitality",
-  badges: [
-    { label: "All-around resort back office", tone: "gold" },
-    { label: "Featured", tone: "gold" },
-  ],
-  price: { amount: 0, currency: "PHP", model: "custom_quote", suffix: "custom quote" },
-  humanApprovalRequired: true,
-  agentReadable: true,
-  featured: true,
-  topRated: true,
-  deploymentScope: ["1 Resort", "Multi-channel", "Management dashboard", "Human approval workflows"],
-  includedServices: [
-    "Guest inquiries and concierge support",
-    "Booking and availability assistance",
-    "Lead and booking follow-up",
-    "Review monitoring and reply drafting",
-    "Social media planning and content support",
-    "Operations reminders and task coordination",
-    "Management summaries and performance reporting",
-    "Human approval for sensitive actions",
-  ],
-  active: true,
-  displayOrder: 0,
-};
-
-const DEFAULT_OPERATORS: EditableOperator[] = [
-  KAPWA,
-  ...OPERATORS.map((operator, index) => ({ ...operator, active: true, displayOrder: index + 1 })),
-];
+export type EditableOperator = AdminOperator;
 
 type OperatorCatalogValue = {
-  operators: EditableOperator[];
+  operators: EditableOperator[]; // admin view when passkey provided, else public list
   visibleOperators: EditableOperator[];
-  addOperator: (operator: EditableOperator) => void;
-  updateOperator: (id: string, operator: EditableOperator) => void;
-  deleteOperator: (id: string) => void;
-  resetOperators: () => void;
+  loading: boolean;
+  loadAdmin: (passkey: string) => Promise<void>;
+  addOperator: (operator: EditableOperator, passkey: string) => Promise<void>;
+  updateOperator: (id: string, operator: EditableOperator, passkey: string) => Promise<void>;
+  deleteOperator: (id: string, passkey: string) => Promise<void>;
+  refresh: () => Promise<void>;
 };
 
 const OperatorCatalogContext = createContext<OperatorCatalogValue | null>(null);
 
-function normalize(items: EditableOperator[]) {
-  return items
-    .map((item, index) => ({ active: true, displayOrder: index, ...item }))
-    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
-}
+const PUBLIC_KEY = ["operators", "public"] as const;
+const ADMIN_KEY = ["operators", "admin"] as const;
 
 export function OperatorCatalogProvider({ children }: { children: ReactNode }) {
-  const [operators, setOperators] = useState<EditableOperator[]>(() => normalize(DEFAULT_OPERATORS));
+  const qc = useQueryClient();
+  const listPublic = useServerFn(listPublicOperators);
+  const listAdmin = useServerFn(listAllOperators);
+  const upsertFn = useServerFn(upsertOperator);
+  const deleteFn = useServerFn(deleteOperatorFn);
 
-  useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (saved) setOperators(normalize(JSON.parse(saved)));
-    } catch {
-      setOperators(normalize(DEFAULT_OPERATORS));
-    }
-  }, []);
+  const publicQuery = useQuery({
+    queryKey: PUBLIC_KEY,
+    queryFn: () => listPublic(),
+    staleTime: 30_000,
+  });
 
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(operators));
-    } catch {
-      // Keep in-memory state working if browser storage is unavailable.
-    }
-  }, [operators]);
+  const adminQuery = useQuery<EditableOperator[]>({
+    queryKey: ADMIN_KEY,
+    queryFn: () => Promise.resolve([]),
+    enabled: false,
+    initialData: [],
+  });
 
-  const value = useMemo<OperatorCatalogValue>(() => ({
-    operators,
-    visibleOperators: operators.filter((operator) => operator.active !== false),
-    addOperator: (operator) => setOperators((current) => normalize([...current, operator])),
-    updateOperator: (id, operator) => setOperators((current) => normalize(current.map((item) => item.id === id ? operator : item))),
-    deleteOperator: (id) => setOperators((current) => current.filter((item) => item.id !== id)),
-    resetOperators: () => setOperators(normalize(DEFAULT_OPERATORS)),
-  }), [operators]);
+  const value = useMemo<OperatorCatalogValue>(() => {
+    const publicList = publicQuery.data ?? [];
+    const adminList = adminQuery.data ?? [];
+    const operators = adminList.length > 0 ? adminList : publicList;
+    return {
+      operators,
+      visibleOperators: publicList,
+      loading: publicQuery.isLoading,
+      async loadAdmin(passkey: string) {
+        const rows = await listAdmin({ data: { passkey } });
+        qc.setQueryData(ADMIN_KEY, rows);
+      },
+      async addOperator(operator, passkey) {
+        await upsertFn({ data: { passkey, operator } });
+        await Promise.all([
+          listAdmin({ data: { passkey } }).then((rows) => qc.setQueryData(ADMIN_KEY, rows)),
+          qc.invalidateQueries({ queryKey: PUBLIC_KEY }),
+        ]);
+      },
+      async updateOperator(_id, operator, passkey) {
+        await upsertFn({ data: { passkey, operator } });
+        await Promise.all([
+          listAdmin({ data: { passkey } }).then((rows) => qc.setQueryData(ADMIN_KEY, rows)),
+          qc.invalidateQueries({ queryKey: PUBLIC_KEY }),
+        ]);
+      },
+      async deleteOperator(id, passkey) {
+        await deleteFn({ data: { passkey, id } });
+        await Promise.all([
+          listAdmin({ data: { passkey } }).then((rows) => qc.setQueryData(ADMIN_KEY, rows)),
+          qc.invalidateQueries({ queryKey: PUBLIC_KEY }),
+        ]);
+      },
+      async refresh() {
+        await qc.invalidateQueries({ queryKey: PUBLIC_KEY });
+      },
+    };
+  }, [publicQuery.data, publicQuery.isLoading, adminQuery.data, qc, listAdmin, upsertFn, deleteFn]);
 
   return <OperatorCatalogContext.Provider value={value}>{children}</OperatorCatalogContext.Provider>;
 }
