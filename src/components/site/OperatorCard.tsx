@@ -2,25 +2,32 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Bookmark } from "lucide-react";
 import type { Operator } from "@/lib/types";
+import type { OperatorMedia } from "@/lib/operator-media";
 import { formatPHP } from "@/lib/site-data";
 import { Icon } from "./Icon";
 import { StatusChip } from "./StatusChip";
+import { OperatorMediaPreview } from "./OperatorMediaPreview";
 
 interface Props {
   operator: Operator;
+  media?: OperatorMedia[];
   compact?: boolean;
 }
 
-export function OperatorCard({ operator, compact = false }: Props) {
+export function OperatorCard({ operator, media = [], compact = false }: Props) {
   const [saved, setSaved] = useState(false);
   const priceLabel =
     operator.price.model === "one_time_setup"
       ? `${formatPHP(operator.price.amount)} one-time`
-      : `From ${formatPHP(operator.price.amount)} ${operator.price.suffix}`;
+      : operator.price.model === "custom_quote"
+        ? "Custom quote"
+        : `From ${formatPHP(operator.price.amount)} ${operator.price.suffix}`;
   const isSetup = operator.kind === "setup";
 
   return (
     <div className="group card card-hover flex flex-col p-6">
+      <OperatorMediaPreview media={media} compact={compact} />
+
       <div className="mb-4 flex items-start justify-between">
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-crimson/40 bg-crimson/[0.07] text-crimson">
           <Icon name={operator.icon} size={22} strokeWidth={1.5} />
@@ -30,7 +37,7 @@ export function OperatorCard({ operator, compact = false }: Props) {
             type="button"
             aria-label={saved ? "Remove bookmark" : "Save operator"}
             aria-pressed={saved}
-            onClick={() => setSaved((s) => !s)}
+            onClick={() => setSaved((current) => !current)}
             className="focus-ring rounded-md p-1 text-faint transition-colors hover:text-gold"
           >
             <Bookmark size={17} fill={saved ? "currentColor" : "none"} className={saved ? "text-gold" : ""} />
@@ -48,9 +55,9 @@ export function OperatorCard({ operator, compact = false }: Props) {
 
       {!compact && (
         <div className="mt-4 flex flex-wrap gap-2">
-          {operator.badges.map((b) => (
-            <StatusChip key={b.label} tone={b.tone}>
-              {b.label}
+          {operator.badges.map((badge) => (
+            <StatusChip key={badge.label} tone={badge.tone}>
+              {badge.label}
             </StatusChip>
           ))}
         </div>
