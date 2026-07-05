@@ -4,6 +4,7 @@ import { ArrowRight, Bookmark } from "lucide-react";
 import type { Operator } from "@/lib/types";
 import type { OperatorMedia } from "@/lib/operator-media";
 import { formatPHP } from "@/lib/site-data";
+import { useOperatorMedia } from "@/hooks/useOperatorMedia";
 import { Icon } from "./Icon";
 import { StatusChip } from "./StatusChip";
 import { OperatorMediaPreview } from "./OperatorMediaPreview";
@@ -14,8 +15,10 @@ interface Props {
   compact?: boolean;
 }
 
-export function OperatorCard({ operator, media = [], compact = false }: Props) {
+export function OperatorCard({ operator, media, compact = false }: Props) {
   const [saved, setSaved] = useState(false);
+  const { media: allMedia } = useOperatorMedia();
+  const operatorMedia = media ?? allMedia.filter((item) => item.operatorId === operator.id);
   const priceLabel =
     operator.price.model === "one_time_setup"
       ? `${formatPHP(operator.price.amount)} one-time`
@@ -26,7 +29,7 @@ export function OperatorCard({ operator, media = [], compact = false }: Props) {
 
   return (
     <div className="group card card-hover flex flex-col p-6">
-      <OperatorMediaPreview media={media} compact={compact} />
+      <OperatorMediaPreview media={operatorMedia} compact={compact} />
 
       <div className="mb-4 flex items-start justify-between">
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-crimson/40 bg-crimson/[0.07] text-crimson">
