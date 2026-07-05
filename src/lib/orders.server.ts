@@ -51,7 +51,7 @@ export async function insertOrderFromDraft(params: {
         offer_kind: draft.offerKind,
         offer_name: draft.offerName,
         plan: draft.plan,
-        line_items: draft.lineItems,
+        line_items: draft.lineItems as unknown as import("@/integrations/supabase/types").Json,
         total_amount: draft.totalAmount,
         currency: draft.currency,
         user_id: userId,
