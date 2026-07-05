@@ -16,82 +16,82 @@ export type Database = {
     Tables: {
       orders: {
         Row: {
-          id: string
-          order_ref: string
           channel: string
+          created_at: string
+          currency: string
+          id: string
+          line_items: Json
+          notes: string | null
           offer_id: string
           offer_kind: string
           offer_name: string
+          order_ref: string
           plan: string | null
-          line_items: Json
-          total_amount: number
-          currency: string
-          user_id: string | null
-          requester_name: string | null
           requester_email: string | null
-          notes: string | null
+          requester_name: string | null
           status: Database["public"]["Enums"]["order_status"]
-          created_at: string
+          total_amount: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
-          id?: string
-          order_ref: string
           channel?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          line_items?: Json
+          notes?: string | null
           offer_id: string
           offer_kind: string
           offer_name: string
+          order_ref: string
           plan?: string | null
-          line_items?: Json
-          total_amount: number
-          currency?: string
-          user_id?: string | null
-          requester_name?: string | null
           requester_email?: string | null
-          notes?: string | null
+          requester_name?: string | null
           status?: Database["public"]["Enums"]["order_status"]
-          created_at?: string
+          total_amount: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
-          id?: string
-          order_ref?: string
           channel?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          line_items?: Json
+          notes?: string | null
           offer_id?: string
           offer_kind?: string
           offer_name?: string
+          order_ref?: string
           plan?: string | null
-          line_items?: Json
-          total_amount?: number
-          currency?: string
-          user_id?: string | null
-          requester_name?: string | null
           requester_email?: string | null
-          notes?: string | null
+          requester_name?: string | null
           status?: Database["public"]["Enums"]["order_status"]
-          created_at?: string
+          total_amount?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
       user_roles: {
         Row: {
-          id: string
-          user_id: string
-          role: Database["public"]["Enums"]["app_role"]
           created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          role: Database["public"]["Enums"]["app_role"]
           created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          role?: Database["public"]["Enums"]["app_role"]
           created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -101,7 +101,10 @@ export type Database = {
     }
     Functions: {
       has_role: {
-        Args: { _user_id: string; _role: Database["public"]["Enums"]["app_role"] }
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
         Returns: boolean
       }
     }
