@@ -32,34 +32,51 @@ export function OperatorEditorDialog({
 
   return (
     <Dialog open={!!operator} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[94vh] max-w-5xl overflow-y-auto border-line bg-bg text-ink">
-        <DialogHeader>
-          <DialogTitle className="font-display text-3xl">{isNew ? "Add AI operator" : `Edit ${form?.name ?? "operator"}`}</DialogTitle>
-          <DialogDescription>Manage catalog details, pricing, visibility, screenshots, and optional video.</DialogDescription>
+      <DialogContent
+        className="h-[94vh] max-h-[900px] w-[calc(100vw-1.5rem)] max-w-5xl grid-rows-[auto_minmax(0,1fr)_auto] gap-0 border-line/50 p-0"
+        style={{ backgroundColor: "rgb(var(--surface))" }}
+      >
+        <DialogHeader className="border-b border-line/25 px-6 py-5 pr-14 sm:px-8">
+          <DialogTitle className="font-display text-3xl">
+            {isNew ? "Add AI operator" : `Edit ${form?.name ?? "operator"}`}
+          </DialogTitle>
+          <DialogDescription className="text-muted">
+            Manage catalog details, pricing, visibility, screenshots, and optional video.
+          </DialogDescription>
         </DialogHeader>
 
-        {form && (
-          <div className="space-y-6">
-            <OperatorFormFields operator={form} onChange={setForm} />
-            {isNew ? (
-              <div className="rounded-lg border border-gold/25 bg-gold/5 p-4 text-sm text-muted">
-                Save the operator first, then reopen it to upload screenshots and video from your device.
-              </div>
-            ) : (
-              <OperatorMediaAdmin
-                operatorId={form.id}
-                operatorName={form.name}
-                passkey={passkey}
-                media={media}
-                onChange={onMediaChange}
-              />
-            )}
-          </div>
-        )}
+        <div
+          className="min-h-0 overflow-y-auto px-6 py-6 sm:px-8"
+          style={{ backgroundColor: "rgb(var(--surface))" }}
+        >
+          {form && (
+            <div className="space-y-6">
+              <OperatorFormFields operator={form} onChange={setForm} />
+              {isNew ? (
+                <div className="rounded-lg border border-gold/25 bg-gold/5 p-4 text-sm text-muted">
+                  Save the operator first, then reopen it to upload screenshots and video from your device.
+                </div>
+              ) : (
+                <OperatorMediaAdmin
+                  operatorId={form.id}
+                  operatorName={form.name}
+                  passkey={passkey}
+                  media={media}
+                  onChange={onMediaChange}
+                />
+              )}
+            </div>
+          )}
+          {error && <p className="mt-4 text-sm text-crimson">{error}</p>}
+        </div>
 
-        {error && <p className="text-sm text-crimson">{error}</p>}
-        <DialogFooter>
-          <button type="button" onClick={onClose} className="rounded-md border border-line px-4 py-2 text-sm">Cancel</button>
+        <DialogFooter
+          className="border-t border-line/25 px-6 py-4 sm:px-8"
+          style={{ backgroundColor: "rgb(var(--surface))" }}
+        >
+          <button type="button" onClick={onClose} className="rounded-md border border-line px-4 py-2 text-sm">
+            Cancel
+          </button>
           <button
             type="button"
             disabled={saving || !form}
