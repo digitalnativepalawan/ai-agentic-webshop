@@ -60,6 +60,10 @@ function MissionControl() {
 
       {/* METRICS STRIP */}
       <Section className="!py-8">
+        <div className="mb-4 flex items-center gap-2">
+          <Eyebrow>Execution metrics</Eyebrow>
+          <StatusChip tone="outline" className="!text-[10px] uppercase tracking-[0.1em]">Sample preview · not live</StatusChip>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {MISSION_CONTROL_METRICS.map((m) => (
             <div key={m.label} className="card p-5">
@@ -69,6 +73,9 @@ function MissionControl() {
             </div>
           ))}
         </div>
+        <p className="mt-3 text-[12px] text-faint">
+          These figures illustrate the Mission Control dashboard. Live metrics become available once an account is connected.
+        </p>
       </Section>
 
       {/* LIVE PREVIEW */}

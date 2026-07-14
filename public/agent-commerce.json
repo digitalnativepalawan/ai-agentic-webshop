@@ -28,24 +28,70 @@
     "note": "All prices are indicative. Final pricing is confirmed after human review."
   },
   "allowedAgentActions": [
-    { "action": "browse", "description": "Read offers, categories, and pricing." },
-    { "action": "compare", "description": "Compare offers across categories." },
-    { "action": "prepare_checkout", "description": "Assemble an order for human review." },
-    { "action": "request_availability", "description": "Ask for stay availability on given dates." },
-    { "action": "request_setup", "description": "Request operator setup and onboarding." },
-    { "action": "request_quote", "description": "Request a custom partnership quote." },
-    { "action": "view_status", "description": "Poll the status of a prepared order." }
+    {
+      "action": "browse",
+      "description": "Read offers, categories, and pricing."
+    },
+    {
+      "action": "compare",
+      "description": "Compare offers across categories."
+    },
+    {
+      "action": "prepare_checkout",
+      "description": "Assemble an order for human review."
+    },
+    {
+      "action": "request_availability",
+      "description": "Ask for stay availability on given dates."
+    },
+    {
+      "action": "request_setup",
+      "description": "Request operator setup and onboarding."
+    },
+    {
+      "action": "request_quote",
+      "description": "Request a custom partnership quote."
+    },
+    {
+      "action": "view_status",
+      "description": "Poll the status of a prepared order."
+    }
   ],
   "disallowedWithoutHumanApproval": [
-    { "action": "final_payment", "reason": "Payments are only executed after human approval." },
-    { "action": "confirmed_booking", "reason": "Bookings require human confirmation." },
-    { "action": "deployment", "reason": "Operators are deployed by humans after review." },
-    { "action": "account_connection", "reason": "Connecting third-party accounts requires human consent." },
-    { "action": "public_posting", "reason": "Public posts require human approval before publishing." },
-    { "action": "partnership_approval", "reason": "Partnerships are approved by the Merqato team." }
+    {
+      "action": "final_payment",
+      "reason": "Payments are only executed after human approval."
+    },
+    {
+      "action": "confirmed_booking",
+      "reason": "Bookings require human confirmation."
+    },
+    {
+      "action": "deployment",
+      "reason": "Operators are deployed by humans after review."
+    },
+    {
+      "action": "account_connection",
+      "reason": "Connecting third-party accounts requires human consent."
+    },
+    {
+      "action": "public_posting",
+      "reason": "Public posts require human approval before publishing."
+    },
+    {
+      "action": "partnership_approval",
+      "reason": "Partnerships are approved by the Merqato team."
+    }
   ],
   "checkout": {
-    "flow": ["select", "configure", "verify", "human_approval", "pay_or_reserve", "mission_created"],
+    "flow": [
+      "select",
+      "configure",
+      "verify",
+      "human_approval",
+      "pay_or_reserve",
+      "mission_created"
+    ],
     "averageApprovalTime": "2-4 business hours",
     "requestApproval": {
       "method": "POST",
@@ -53,7 +99,7 @@
       "status": "live",
       "contentType": "application/json",
       "body": {
-        "offerId": "string (required, e.g. guest-concierge-ai)",
+        "offerId": "string (required, e.g. kapwa-full)",
         "requesterName": "string (optional)",
         "requesterEmail": "string (optional)",
         "notes": "string (optional)",
@@ -70,9 +116,25 @@
     }
   },
   "categories": [
-    { "id": "ai-operators", "path": "/agents", "label": "AI Operators" },
-    { "id": "nomad-stays", "path": "/stays", "label": "Nomad Stays" },
-    { "id": "ecosystem-partnerships", "path": "/ecosystem", "label": "Ecosystem Partnerships" },
-    { "id": "mission-control", "path": "/mission-control", "label": "Mission Control" }
+    {
+      "id": "ai-operators",
+      "path": "/agents",
+      "label": "AI Operators"
+    },
+    {
+      "id": "nomad-stays",
+      "path": "/stays",
+      "label": "Nomad Stays"
+    },
+    {
+      "id": "ecosystem-partnerships",
+      "path": "/ecosystem",
+      "label": "Ecosystem Partnerships"
+    },
+    {
+      "id": "mission-control",
+      "path": "/mission-control",
+      "label": "Mission Control"
+    }
   ]
 }

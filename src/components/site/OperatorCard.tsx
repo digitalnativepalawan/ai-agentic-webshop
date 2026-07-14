@@ -77,6 +77,12 @@ export function OperatorCard({ operator, media, compact = false }: Props) {
           <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
         </Link>
       </div>
+
+      {/* Agentic governance schema — visible per-card (skill Rule 4) */}
+      <div className="mt-4 rounded-lg border border-dashed border-line/25 bg-surface-2/30 p-3 font-mono text-[10px] leading-relaxed text-faint">
+        <p><span className="text-gold">Agent:</span> browse · compare · prepare_checkout · request_setup · view_status</p>
+        <p className="mt-1"><span className="text-crimson">Human gates:</span> final_payment · deployment · public_posting</p>
+      </div>
     </div>
   );
 }

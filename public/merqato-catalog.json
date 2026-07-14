@@ -4,95 +4,111 @@
   "business": "merQato.digital",
   "currency": "PHP",
   "humanApprovalRequired": true,
-  "categories": ["ai-operators", "nomad-stays", "ecosystem-partnerships", "mission-control"],
+  "categories": [
+    "ai-operators",
+    "nomad-stays",
+    "ecosystem-partnerships",
+    "mission-control"
+  ],
   "offers": [
     {
-      "id": "guest-concierge-ai",
+      "id": "kapwa-essential",
       "kind": "operator",
       "category": "hospitality",
-      "name": "Guest Concierge AI",
-      "tagline": "Delight guests 24/7 with instant answers, recommendations, and seamless service.",
-      "pricing": { "amount": 3999, "currency": "PHP", "model": "monthly_subscription" },
+      "name": "KAPWA — Essential",
+      "tagline": "The all-in-one AI back office for resorts: guest service + booking assistance.",
+      "pricing": {
+        "amount": 3999,
+        "currency": "PHP",
+        "model": "monthly_subscription"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "prepare_checkout", "request_setup", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "prepare_checkout",
+        "request_setup",
+        "view_status"
+      ],
+      "modules": [
+        "guest-concierge",
+        "booking-assistant"
+      ]
     },
     {
-      "id": "booking-assistant-ai",
-      "kind": "operator",
-      "category": "booking",
-      "name": "Booking Assistant AI",
-      "tagline": "Handle inquiries, check availability, and confirm bookings — accurately.",
-      "pricing": { "amount": 4499, "currency": "PHP", "model": "monthly_subscription" },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "prepare_checkout", "request_setup", "view_status"]
-    },
-    {
-      "id": "lead-generation-ai",
-      "kind": "operator",
-      "category": "lead-gen",
-      "name": "Lead Generation AI",
-      "tagline": "Find, qualify, and nurture high-value leads across channels that convert.",
-      "pricing": { "amount": 5499, "currency": "PHP", "model": "monthly_subscription" },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "prepare_checkout", "request_setup", "view_status"]
-    },
-    {
-      "id": "social-media-operator",
-      "kind": "operator",
-      "category": "marketing",
-      "name": "Social Media Operator",
-      "tagline": "Plan, create, and publish content that grows engagement and brand presence.",
-      "pricing": { "amount": 4299, "currency": "PHP", "model": "monthly_subscription" },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "prepare_checkout", "request_setup", "view_status"]
-    },
-    {
-      "id": "review-manager-ai",
-      "kind": "operator",
-      "category": "operations",
-      "name": "Review Manager AI",
-      "tagline": "Monitor reviews, draft replies, and protect your reputation across platforms.",
-      "pricing": { "amount": 2999, "currency": "PHP", "model": "monthly_subscription" },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "prepare_checkout", "request_setup", "view_status"]
-    },
-    {
-      "id": "menu-ordering-ai",
+      "id": "kapwa-full",
       "kind": "operator",
       "category": "hospitality",
-      "name": "Menu & Ordering AI",
-      "tagline": "Smart menu recommendations, upsells, and order automation across channels.",
-      "pricing": { "amount": 4799, "currency": "PHP", "model": "monthly_subscription" },
+      "name": "KAPWA — Full",
+      "tagline": "KAPWA with growth + reputation: lead gen, social, reviews, revenue follow-up.",
+      "pricing": {
+        "amount": 7999,
+        "currency": "PHP",
+        "model": "monthly_subscription"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "prepare_checkout", "request_setup", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "prepare_checkout",
+        "request_setup",
+        "view_status"
+      ],
+      "modules": [
+        "guest-concierge",
+        "booking-assistant",
+        "lead-generation",
+        "social-media",
+        "review-manager",
+        "revenue-followup"
+      ]
+    },
+    {
+      "id": "kapwa-enterprise",
+      "kind": "operator",
+      "category": "hospitality",
+      "name": "KAPWA — Enterprise",
+      "tagline": "Full plus menu/ordering, multi-property, custom integrations. Custom quote.",
+      "pricing": {
+        "amount": 0,
+        "currency": "PHP",
+        "model": "custom_quote"
+      },
+      "agentReadable": true,
+      "humanApprovalRequired": true,
+      "actions": [
+        "browse",
+        "compare",
+        "prepare_checkout",
+        "request_setup",
+        "view_status"
+      ],
+      "modules": [
+        "all"
+      ]
     },
     {
       "id": "mission-control-setup",
       "kind": "setup",
       "category": "mission-control",
       "name": "Mission Control Setup",
-      "tagline": "Onboard your property, connect systems, and activate real-time performance visibility.",
-      "pricing": { "amount": 19999, "currency": "PHP", "model": "one_time_setup" },
+      "tagline": "Onboard your property, connect systems, activate real-time visibility.",
+      "pricing": {
+        "amount": 19999,
+        "currency": "PHP",
+        "model": "one_time_setup"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "prepare_checkout", "request_setup", "view_status"]
-    },
-    {
-      "id": "revenue-followup-ai",
-      "kind": "operator",
-      "category": "operations",
-      "name": "Revenue Follow-up AI",
-      "tagline": "Recover lost bookings and drive repeat stays with intelligent, timely follow-ups.",
-      "pricing": { "amount": 4999, "currency": "PHP", "model": "monthly_subscription" },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "prepare_checkout", "request_setup", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "prepare_checkout",
+        "request_setup",
+        "view_status"
+      ]
     },
     {
       "id": "workspace-day-pass",
@@ -100,10 +116,19 @@
       "category": "nomad-stays",
       "name": "Workspace Day Pass",
       "tagline": "Focus for the day. Work, connect, ship.",
-      "pricing": { "amount": 999, "currency": "PHP", "model": "per_day" },
+      "pricing": {
+        "amount": 999,
+        "currency": "PHP",
+        "model": "per_day"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "request_availability", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "request_availability",
+        "view_status"
+      ]
     },
     {
       "id": "weekly-sprint",
@@ -111,10 +136,19 @@
       "category": "nomad-stays",
       "name": "Weekly Sprint",
       "tagline": "One week to focus and make progress.",
-      "pricing": { "amount": 4999, "currency": "PHP", "model": "per_week" },
+      "pricing": {
+        "amount": 4999,
+        "currency": "PHP",
+        "model": "per_week"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "request_availability", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "request_availability",
+        "view_status"
+      ]
     },
     {
       "id": "30-day-nomad-stay",
@@ -122,10 +156,19 @@
       "category": "nomad-stays",
       "name": "30-Day Nomad Stay",
       "tagline": "Stay a month. Build without limits.",
-      "pricing": { "amount": 19999, "currency": "PHP", "model": "per_stay" },
+      "pricing": {
+        "amount": 19999,
+        "currency": "PHP",
+        "model": "per_stay"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "request_availability", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "request_availability",
+        "view_status"
+      ]
     },
     {
       "id": "founder-residency",
@@ -133,10 +176,19 @@
       "category": "nomad-stays",
       "name": "Founder Residency",
       "tagline": "Designed for founders staying 1-3 months+.",
-      "pricing": { "amount": 49999, "currency": "PHP", "model": "per_month" },
+      "pricing": {
+        "amount": 49999,
+        "currency": "PHP",
+        "model": "per_month"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "request_availability", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "request_availability",
+        "view_status"
+      ]
     },
     {
       "id": "property-partner",
@@ -144,10 +196,19 @@
       "category": "ecosystem-partnerships",
       "name": "Property Partner",
       "tagline": "Hotels, resorts, villas, and serviced stays.",
-      "pricing": { "amount": 0, "currency": "PHP", "model": "custom_quote" },
+      "pricing": {
+        "amount": 0,
+        "currency": "PHP",
+        "model": "custom_quote"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "request_quote", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "request_quote",
+        "view_status"
+      ]
     },
     {
       "id": "local-business-partner",
@@ -155,10 +216,19 @@
       "category": "ecosystem-partnerships",
       "name": "Local Business Partner",
       "tagline": "Tour operators, F&B, transport, wellness, and local services.",
-      "pricing": { "amount": 0, "currency": "PHP", "model": "custom_quote" },
+      "pricing": {
+        "amount": 0,
+        "currency": "PHP",
+        "model": "custom_quote"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "request_quote", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "request_quote",
+        "view_status"
+      ]
     },
     {
       "id": "technology-partner",
@@ -166,10 +236,19 @@
       "category": "ecosystem-partnerships",
       "name": "Technology Partner",
       "tagline": "SaaS, tools, integrations, and AI platforms.",
-      "pricing": { "amount": 0, "currency": "PHP", "model": "custom_quote" },
+      "pricing": {
+        "amount": 0,
+        "currency": "PHP",
+        "model": "custom_quote"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "request_quote", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "request_quote",
+        "view_status"
+      ]
     },
     {
       "id": "founding-partner-program",
@@ -178,10 +257,19 @@
       "name": "Founding Partner Program",
       "tagline": "Select partners shaping the future of Merqato.",
       "inviteOnly": true,
-      "pricing": { "amount": 0, "currency": "PHP", "model": "custom_quote" },
+      "pricing": {
+        "amount": 0,
+        "currency": "PHP",
+        "model": "custom_quote"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "request_quote", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "request_quote",
+        "view_status"
+      ]
     },
     {
       "id": "revenue-share-pilot",
@@ -190,10 +278,19 @@
       "name": "Revenue-Share Pilot",
       "tagline": "Pilot new solutions with performance-aligned terms.",
       "inviteOnly": true,
-      "pricing": { "amount": 0, "currency": "PHP", "model": "custom_quote" },
+      "pricing": {
+        "amount": 0,
+        "currency": "PHP",
+        "model": "custom_quote"
+      },
       "agentReadable": true,
       "humanApprovalRequired": true,
-      "actions": ["browse", "compare", "request_quote", "view_status"]
+      "actions": [
+        "browse",
+        "compare",
+        "request_quote",
+        "view_status"
+      ]
     }
   ]
 }

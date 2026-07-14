@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
 });
 
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Palmtree } from "lucide-react";
+import { ArrowRight, Bot, Palmtree } from "lucide-react";
 import { BUY_WITH_CONFIDENCE, HERO_BADGES, WHAT_YOU_CAN_DO } from "@/lib/site-data";
 import { useOperatorCatalog } from "@/context/OperatorCatalogContext";
 import { Section, Eyebrow, HeroBackdrop } from "@/components/site/Section";
@@ -56,6 +56,16 @@ function Home() {
             <CTAButton to="/agents" variant="primary">Browse AI Operators</CTAButton>
             <CTAButton to="/stays" variant="secondary">Book a Stay</CTAButton>
             <CTAButton to="/mission-control" variant="ghost">See Mission Control</CTAButton>
+          </div>
+
+          {/* Dual entry points: human browse + agent/manifest path (skill Rule 2) */}
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[12.5px]">
+            <span className="inline-flex items-center gap-1.5 text-faint">
+              <Bot size={14} className="text-gold" /> For AI agents:
+            </span>
+            <a href="/merqato-catalog.json" className="focus-ring inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-gold hover:text-gold-soft">Browse as an agent →</a>
+            <span className="text-faint">·</span>
+            <a href="/agent-commerce.json" className="focus-ring inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-gold hover:text-gold-soft">View API manifest →</a>
           </div>
 
           <div className="mt-10 flex items-center gap-3">

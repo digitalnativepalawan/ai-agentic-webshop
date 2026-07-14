@@ -8,6 +8,21 @@ import {
   deleteOperator as deleteOperatorFn,
   type AdminOperator,
 } from "@/lib/operators.functions";
+import { OPERATORS } from "@/lib/site-data";
+import type { Operator } from "@/lib/types";
+
+/**
+ * Static catalog fallback. The live DB (Supabase) may have no seeded rows on a
+ * given deploy; when the public query returns nothing we fall back to the
+ * authored catalog so the marketplace never renders an empty grid. Admin
+ * writes still go through Supabase when connected.
+ */
+// KAPWA is the product. Static fallback guarantees the grid is never empty
+// even if the live Supabase operators table is missing/empty (see incident where
+// operators "disappeared" because the public query returned no rows).
+const STATIC_OPERATORS: AdminOperator[] = OPERATORS.map(
+  (op: Operator): AdminOperator => ({ ...op, active: true, displayOrder: 0 }),
+);
 
 export type EditableOperator = AdminOperator;
 
@@ -38,6 +53,7 @@ export function OperatorCatalogProvider({ children }: { children: ReactNode }) {
     queryKey: PUBLIC_KEY,
     queryFn: () => listPublic(),
     staleTime: 30_000,
+    retry: 1,
   });
 
   const adminQuery = useQuery<EditableOperator[]>({
@@ -48,7 +64,12 @@ export function OperatorCatalogProvider({ children }: { children: ReactNode }) {
   });
 
   const value = useMemo<OperatorCatalogValue>(() => {
-    const publicList = publicQuery.data ?? [];
+    // Live DB wins when it returns rows; otherwise fall back to the KAPWA
+    // static catalog so the storefront is always populated.
+    const publicList =
+      publicQuery.data && publicQuery.data.length > 0
+        ? publicQuery.data
+        : STATIC_OPERATORS;
     const adminList = adminQuery.data ?? [];
     const operators = adminList.length > 0 ? adminList : publicList;
     return {

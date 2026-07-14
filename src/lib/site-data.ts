@@ -1,5 +1,6 @@
 import type {
   Operator,
+  Badge,
   OperatorCategory,
   Partnership,
   ProcessStep,
@@ -18,7 +19,7 @@ export const BRAND = {
     "The marketplace where people and AI agents safely discover, compare, and request AI Operators, Palawan stays, and digital infrastructure.",
   location: "San Vicente, Palawan, Philippines",
   contactEmail: "hello@merqato.digital",
-} as const;
+};
 
 export const NAV = [
   { label: "Home", to: "/" },
@@ -56,202 +57,161 @@ export const OPERATOR_CATEGORIES: {
 /* ------------------------------------------------------------------ *
  * AI Operators
  * ------------------------------------------------------------------ */
+export const KAPWA = {
+  id: "kapwa-resort-backoffice",
+  kind: "operator",
+  name: "KAPWA",
+  icon: "Sparkles",
+  tagline:
+    "The all-in-one AI back office for resorts — guest service, bookings, lead gen, marketing, reviews, and operations in one coordinated system with human approval.",
+  category: "hospitality",
+  badges: [
+    { label: "The main operator", tone: "gold" },
+    { label: "AI-agent readable", tone: "gold" },
+  ] as Badge[],
+  humanApprovalRequired: true,
+  agentReadable: true,
+  featured: true,
+  topRated: true,
+  deploymentScope: ["1 Resort", "Multi-channel", "English + Tagalog", "24/7 Coverage", "Human approval workflows"] as string[],
+  // The 8 capabilities bundled inside KAPWA (not sold separately).
+  modules: [
+    { id: "guest-concierge", name: "Guest Concierge", icon: "BellRing", desc: "24/7 instant answers, recommendations, seamless service." },
+    { id: "booking-assistant", name: "Booking Assistant", icon: "CalendarCheck", desc: "Inquiries, availability, confirmed bookings — accurately." },
+    { id: "lead-generation", name: "Lead Generation", icon: "Target", desc: "Find, qualify, and nurture high-value leads that convert." },
+    { id: "social-media", name: "Social Media", icon: "Share2", desc: "Plan, draft, and publish content that grows presence." },
+    { id: "review-manager", name: "Review Manager", icon: "Star", desc: "Monitor reviews, draft replies, protect reputation." },
+    { id: "menu-ordering", name: "Menu & Ordering", icon: "UtensilsCrossed", desc: "Smart menus, upsells, order automation across channels." },
+    { id: "revenue-followup", name: "Revenue Follow-up", icon: "Receipt", desc: "Recover lost bookings and drive repeat stays." },
+    { id: "mission-control", name: "Mission Control", icon: "Gauge", desc: "Real-time property performance visibility and alerts." },
+  ],
+  // Three tiers of the same KAPWA product.
+  tiers: [
+    {
+      id: "kapwa-essential",
+      label: "Essential",
+      price: { amount: 3999, currency: "PHP", model: "monthly_subscription", suffix: "/ mo" },
+      summary: "Core guest service + booking assistance.",
+      includedServices: [
+        "Guest Concierge",
+        "Booking Assistant",
+        "AI Agent Setup & Training",
+        "Knowledge Base Configuration",
+        "Channel Integrations (Web, WhatsApp, FB)",
+        "Human Approval & Safety Review",
+      ] as string[],
+    },
+    {
+      id: "kapwa-full",
+      label: "Full",
+      price: { amount: 7999, currency: "PHP", model: "monthly_subscription", suffix: "/ mo" },
+      summary: "Everything Essential plus growth & reputation.",
+      includedServices: [
+        "Guest Concierge",
+        "Booking Assistant",
+        "Lead Generation",
+        "Social Media",
+        "Review Manager",
+        "Revenue Follow-up",
+        "Performance Dashboard",
+        "Human Approval & Safety Review",
+      ] as string[],
+    },
+    {
+      id: "kapwa-enterprise",
+      label: "Enterprise",
+      price: { amount: 0, currency: "PHP", model: "custom_quote", suffix: "custom quote" },
+      summary: "Full plus menu/ordering, multi-property, custom integrations.",
+      includedServices: [
+        "All Full modules",
+        "Menu & Ordering",
+        "Mission Control dashboards",
+        "Multi-property support",
+        "Custom system integrations",
+        "Dedicated onboarding",
+      ] as string[],
+    },
+  ],
+  // One-time activation (Mission Control setup) — separate from subscription.
+  setup: {
+    id: "mission-control-setup",
+    name: "Mission Control Setup",
+    price: { amount: 19999, currency: "PHP", model: "one_time_setup", suffix: "one-time" },
+    includedServices: ["Property Onboarding", "Systems & Data Connection", "Dashboard Configuration", "Team Training"] as string[],
+  },
+} as const;
+
+// Backwards-compatible operator list for the /agents grid + machine-readable catalog.
+// KAPWA tiers are the only listed operators; modules ride inside KAPWA.
 export const OPERATORS: Operator[] = [
   {
-    id: "guest-concierge-ai",
+    id: KAPWA.tiers[0].id,
     kind: "operator",
-    name: "Guest Concierge AI",
-    icon: "BellRing",
-    tagline:
-      "Delight guests 24/7 with instant answers, recommendations, and seamless service.",
+    name: `${KAPWA.name} — ${KAPWA.tiers[0].label}`,
+    icon: KAPWA.icon,
+    tagline: KAPWA.tagline,
     category: "hospitality",
-    badges: [
-      { label: "Best for Resorts", tone: "gold" },
-      { label: "AI-agent readable", tone: "gold" },
-    ],
-    price: { amount: 3999, currency: "PHP", model: "monthly_subscription", suffix: "/ mo" },
+    badges: KAPWA.badges,
+    price: KAPWA.tiers[0].price,
     humanApprovalRequired: true,
     agentReadable: true,
     featured: true,
     topRated: true,
-    deploymentScope: ["1 Property", "Multi-channel", "English + Tagalog", "24/7 Coverage"],
-    includedServices: [
-      "AI Agent Setup & Training",
-      "Knowledge Base Configuration",
-      "Channel Integrations (Web, WhatsApp, FB)",
-      "Performance Dashboard",
-      "Mission Control Tracking",
-      "Human Approval & Safety Review",
-    ],
+    deploymentScope: KAPWA.deploymentScope,
+    includedServices: KAPWA.tiers[0].includedServices,
   },
   {
-    id: "booking-assistant-ai",
+    id: KAPWA.tiers[1].id,
     kind: "operator",
-    name: "Booking Assistant AI",
-    icon: "CalendarCheck",
-    tagline:
-      "Handle inquiries, check availability, and confirm bookings — accurately.",
-    category: "booking",
-    badges: [
-      { label: "Best for Resorts", tone: "gold" },
-      { label: "Human approval required", tone: "crimson" },
-    ],
-    price: { amount: 4499, currency: "PHP", model: "monthly_subscription", suffix: "/ mo" },
-    humanApprovalRequired: true,
-    agentReadable: true,
-    featured: true,
-    deploymentScope: ["1 Property", "Calendar sync", "Multi-channel"],
-    includedServices: [
-      "AI Agent Setup & Training",
-      "Availability & Calendar Integration",
-      "Booking Confirmation Workflow",
-      "Human Approval & Safety Review",
-    ],
-  },
-  {
-    id: "lead-generation-ai",
-    kind: "operator",
-    name: "Lead Generation AI",
-    icon: "Target",
-    tagline: "Find, qualify, and nurture high-value leads across channels that convert.",
-    category: "lead-gen",
-    badges: [
-      { label: "Best for Growth", tone: "gold" },
-      { label: "AI-agent readable", tone: "gold" },
-    ],
-    price: { amount: 5499, currency: "PHP", model: "monthly_subscription", suffix: "/ mo" },
-    humanApprovalRequired: true,
-    agentReadable: true,
-    featured: true,
-    deploymentScope: ["Multi-channel", "CRM sync", "Lead scoring"],
-    includedServices: [
-      "Lead Capture & Scoring",
-      "Channel Integrations",
-      "Nurture Sequences",
-      "Human Approval & Safety Review",
-    ],
-  },
-  {
-    id: "social-media-operator",
-    kind: "operator",
-    name: "Social Media Operator",
-    icon: "Share2",
-    tagline:
-      "Plan, create, and publish content that grows engagement and brand presence.",
-    category: "marketing",
-    badges: [
-      { label: "Best for Marketing", tone: "gold" },
-      { label: "AI-agent readable", tone: "crimson" },
-    ],
-    price: { amount: 4299, currency: "PHP", model: "monthly_subscription", suffix: "/ mo" },
-    humanApprovalRequired: true,
-    agentReadable: true,
-    deploymentScope: ["Multi-platform", "Content calendar", "Human posting approval"],
-    includedServices: [
-      "Content Strategy & Calendar",
-      "Draft Generation",
-      "Human Approval Before Posting",
-      "Performance Reporting",
-    ],
-  },
-  {
-    id: "review-manager-ai",
-    kind: "operator",
-    name: "Review Manager AI",
-    icon: "Star",
-    tagline: "Monitor reviews, draft replies, and protect your reputation across platforms.",
-    category: "operations",
-    badges: [
-      { label: "Best for Reputation", tone: "gold" },
-      { label: "AI-agent readable", tone: "gold" },
-    ],
-    price: { amount: 2999, currency: "PHP", model: "monthly_subscription", suffix: "/ mo" },
-    humanApprovalRequired: true,
-    agentReadable: true,
-    deploymentScope: ["Multi-platform", "Sentiment alerts", "Reply drafting"],
-    includedServices: [
-      "Review Monitoring",
-      "Reply Drafting",
-      "Sentiment Alerts",
-      "Human Approval & Safety Review",
-    ],
-  },
-  {
-    id: "menu-ordering-ai",
-    kind: "operator",
-    name: "Menu & Ordering AI",
-    icon: "UtensilsCrossed",
-    tagline: "Smart menu recommendations, upsells, and order automation across channels.",
+    name: `${KAPWA.name} — ${KAPWA.tiers[1].label}`,
+    icon: KAPWA.icon,
+    tagline: KAPWA.tagline,
     category: "hospitality",
-    badges: [
-      { label: "Best for F&B", tone: "gold" },
-      { label: "Human approval required", tone: "crimson" },
-    ],
-    price: { amount: 4799, currency: "PHP", model: "monthly_subscription", suffix: "/ mo" },
+    badges: KAPWA.badges,
+    price: KAPWA.tiers[1].price,
     humanApprovalRequired: true,
     agentReadable: true,
-    deploymentScope: ["1 Venue", "POS sync", "Multi-channel ordering"],
-    includedServices: [
-      "Menu Digitisation",
-      "Upsell Logic",
-      "Order Routing",
-      "Human Approval & Safety Review",
-    ],
+    deploymentScope: KAPWA.deploymentScope,
+    includedServices: KAPWA.tiers[1].includedServices,
   },
   {
-    id: "mission-control-setup",
+    id: KAPWA.tiers[2].id,
+    kind: "operator",
+    name: `${KAPWA.name} — ${KAPWA.tiers[2].label}`,
+    icon: KAPWA.icon,
+    tagline: KAPWA.tagline,
+    category: "hospitality",
+    badges: [{ label: "Custom quote", tone: "gold" }, { label: "All modules", tone: "gold" }] as Badge[],
+    price: KAPWA.tiers[2].price,
+    humanApprovalRequired: true,
+    agentReadable: true,
+    deploymentScope: KAPWA.deploymentScope,
+    includedServices: KAPWA.tiers[2].includedServices,
+  },
+  {
+    id: KAPWA.setup.id,
     kind: "setup",
-    name: "Mission Control Setup",
+    name: KAPWA.setup.name,
     icon: "Gauge",
-    tagline:
-      "Onboard your property, connect systems, and activate real-time performance visibility.",
+    tagline: "Onboard your property, connect systems, and activate real-time performance visibility.",
     category: "mission-control",
-    badges: [
-      { label: "One-time setup", tone: "gold" },
-      { label: "Human approval required", tone: "crimson" },
-    ],
-    price: { amount: 19999, currency: "PHP", model: "one_time_setup", suffix: "one-time" },
+    badges: [{ label: "One-time setup", tone: "gold" }, { label: "Human approval required", tone: "crimson" }] as Badge[],
+    price: KAPWA.setup.price,
     humanApprovalRequired: true,
     agentReadable: true,
     featured: true,
-    deploymentScope: ["1 Property", "Systems onboarding", "Dashboards & alerts"],
-    includedServices: [
-      "Property Onboarding",
-      "Systems & Data Connection",
-      "Dashboard Configuration",
-      "Team Training",
-    ],
-  },
-  {
-    id: "revenue-followup-ai",
-    kind: "operator",
-    name: "Revenue Follow-up AI",
-    icon: "Receipt",
-    tagline: "Recover lost bookings and drive repeat stays with intelligent, timely follow-ups.",
-    category: "operations",
-    badges: [
-      { label: "Best for Revenue", tone: "gold" },
-      { label: "AI-agent readable", tone: "gold" },
-    ],
-    price: { amount: 4999, currency: "PHP", model: "monthly_subscription", suffix: "/ mo" },
-    humanApprovalRequired: true,
-    agentReadable: true,
-    deploymentScope: ["Multi-channel", "CRM sync", "Automated sequences"],
-    includedServices: [
-      "Abandoned Booking Recovery",
-      "Repeat-Stay Campaigns",
-      "Timing Optimisation",
-      "Human Approval & Safety Review",
-    ],
+    deploymentScope: ["1 Property", "Systems onboarding", "Dashboards & alerts"] as string[],
+    includedServices: KAPWA.setup.includedServices,
   },
 ];
 
 export const FEATURED_OPERATOR_IDS = [
-  "guest-concierge-ai",
-  "booking-assistant-ai",
-  "lead-generation-ai",
+  "kapwa-essential",
+  "kapwa-full",
   "mission-control-setup",
 ];
+
+
 
 /* ------------------------------------------------------------------ *
  * Nomad Stays
