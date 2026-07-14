@@ -145,71 +145,32 @@ export const KAPWA = {
 // KAPWA tiers are the only listed operators; modules ride inside KAPWA.
 export const OPERATORS: Operator[] = [
   {
-    id: KAPWA.tiers[0].id,
+    id: KAPWA.tiers[1].id,
     kind: "operator",
-    name: `${KAPWA.name} — ${KAPWA.tiers[0].label}`,
+    name: `${KAPWA.name} — Full`,
     icon: KAPWA.icon,
-    tagline: KAPWA.tagline,
+    tagline:
+      "The complete AI back office for resorts — guest service, bookings, lead gen, social, reviews, menu & ordering, revenue follow-up, and Mission Control, all coordinated with human approval.",
     category: "hospitality",
-    badges: KAPWA.badges,
-    price: KAPWA.tiers[0].price,
+    badges: [
+      { label: "The main operator", tone: "gold" },
+      { label: "Everything included", tone: "gold" },
+      { label: "Human approval", tone: "crimson" },
+    ],
+    price: KAPWA.tiers[1].price,
     humanApprovalRequired: true,
     agentReadable: true,
     featured: true,
     topRated: true,
     deploymentScope: KAPWA.deploymentScope,
-    includedServices: KAPWA.tiers[0].includedServices,
-  },
-  {
-    id: KAPWA.tiers[1].id,
-    kind: "operator",
-    name: `${KAPWA.name} — ${KAPWA.tiers[1].label}`,
-    icon: KAPWA.icon,
-    tagline: KAPWA.tagline,
-    category: "hospitality",
-    badges: KAPWA.badges,
-    price: KAPWA.tiers[1].price,
-    humanApprovalRequired: true,
-    agentReadable: true,
-    deploymentScope: KAPWA.deploymentScope,
     includedServices: KAPWA.tiers[1].includedServices,
-  },
-  {
-    id: KAPWA.tiers[2].id,
-    kind: "operator",
-    name: `${KAPWA.name} — ${KAPWA.tiers[2].label}`,
-    icon: KAPWA.icon,
-    tagline: KAPWA.tagline,
-    category: "hospitality",
-    badges: [{ label: "Custom quote", tone: "gold" }, { label: "All modules", tone: "gold" }] as Badge[],
-    price: KAPWA.tiers[2].price,
-    humanApprovalRequired: true,
-    agentReadable: true,
-    deploymentScope: KAPWA.deploymentScope,
-    includedServices: KAPWA.tiers[2].includedServices,
-  },
-  {
-    id: KAPWA.setup.id,
-    kind: "setup",
-    name: KAPWA.setup.name,
-    icon: "Gauge",
-    tagline: "Onboard your property, connect systems, and activate real-time performance visibility.",
-    category: "mission-control",
-    badges: [{ label: "One-time setup", tone: "gold" }, { label: "Human approval required", tone: "crimson" }] as Badge[],
-    price: KAPWA.setup.price,
-    humanApprovalRequired: true,
-    agentReadable: true,
-    featured: true,
-    deploymentScope: ["1 Property", "Systems onboarding", "Dashboards & alerts"] as string[],
-    includedServices: KAPWA.setup.includedServices,
   },
 ];
 
 export const FEATURED_OPERATOR_IDS = [
-  "kapwa-essential",
   "kapwa-full",
-  "mission-control-setup",
 ];
+
 
 
 

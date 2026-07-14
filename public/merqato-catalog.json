@@ -12,36 +12,11 @@
   ],
   "offers": [
     {
-      "id": "kapwa-essential",
-      "kind": "operator",
-      "category": "hospitality",
-      "name": "KAPWA — Essential",
-      "tagline": "The all-in-one AI back office for resorts: guest service + booking assistance.",
-      "pricing": {
-        "amount": 3999,
-        "currency": "PHP",
-        "model": "monthly_subscription"
-      },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": [
-        "browse",
-        "compare",
-        "prepare_checkout",
-        "request_setup",
-        "view_status"
-      ],
-      "modules": [
-        "guest-concierge",
-        "booking-assistant"
-      ]
-    },
-    {
       "id": "kapwa-full",
       "kind": "operator",
       "category": "hospitality",
       "name": "KAPWA — Full",
-      "tagline": "KAPWA with growth + reputation: lead gen, social, reviews, revenue follow-up.",
+      "tagline": "The complete AI back office for resorts: guest service, bookings, lead gen, social, reviews, menu & ordering, revenue follow-up, and Mission Control — with human approval.",
       "pricing": {
         "amount": 7999,
         "currency": "PHP",
@@ -62,52 +37,9 @@
         "lead-generation",
         "social-media",
         "review-manager",
-        "revenue-followup"
-      ]
-    },
-    {
-      "id": "kapwa-enterprise",
-      "kind": "operator",
-      "category": "hospitality",
-      "name": "KAPWA — Enterprise",
-      "tagline": "Full plus menu/ordering, multi-property, custom integrations. Custom quote.",
-      "pricing": {
-        "amount": 0,
-        "currency": "PHP",
-        "model": "custom_quote"
-      },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": [
-        "browse",
-        "compare",
-        "prepare_checkout",
-        "request_setup",
-        "view_status"
-      ],
-      "modules": [
-        "all"
-      ]
-    },
-    {
-      "id": "mission-control-setup",
-      "kind": "setup",
-      "category": "mission-control",
-      "name": "Mission Control Setup",
-      "tagline": "Onboard your property, connect systems, activate real-time visibility.",
-      "pricing": {
-        "amount": 19999,
-        "currency": "PHP",
-        "model": "one_time_setup"
-      },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": [
-        "browse",
-        "compare",
-        "prepare_checkout",
-        "request_setup",
-        "view_status"
+        "menu-ordering",
+        "revenue-followup",
+        "mission-control"
       ]
     },
     {
