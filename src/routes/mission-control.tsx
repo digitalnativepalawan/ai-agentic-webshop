@@ -17,6 +17,7 @@ import { MISSION_CONTROL_METRICS } from "@/lib/site-data";
 import { Section, Eyebrow, HeroBackdrop } from "@/components/site/Section";
 import { StatusChip } from "@/components/site/StatusChip";
 import { MissionControlPreview } from "@/components/site/MissionControlPreview";
+import { MissionControlQueue } from "@/components/site/MissionControlQueue";
 import { CTAButton } from "@/components/site/CTAButton";
 import { TrustBlock } from "@/components/site/TrustBlock";
 
@@ -93,6 +94,8 @@ function MissionControl() {
           ))}
         </div>
       </Section>
+
+      <MissionControlQueue />
     </>
   );
 }

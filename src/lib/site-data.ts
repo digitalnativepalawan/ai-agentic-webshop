@@ -78,9 +78,9 @@ export const KAPWA = {
   modules: [
     { id: "guest-concierge", name: "Guest Concierge", icon: "BellRing", desc: "24/7 instant answers, recommendations, seamless service." },
     { id: "booking-assistant", name: "Booking Assistant", icon: "CalendarCheck", desc: "Inquiries, availability, confirmed bookings — accurately." },
-    { id: "lead-generation", name: "Lead Generation", icon: "Target", desc: "Find, qualify, and nurture high-value leads that convert." },
-    { id: "social-media", name: "Social Media", icon: "Share2", desc: "Plan, draft, and publish content that grows presence." },
-    { id: "review-manager", name: "Review Manager", icon: "Star", desc: "Monitor reviews, draft replies, protect reputation." },
+    { id: "lead-generation", name: "Lead Generation", icon: "Target", desc: "Find, qualify, and nurture high-value leads that convert.", source: "Queen OS" },
+    { id: "social-media", name: "Social Media", icon: "Share2", desc: "Plan, draft, and publish content that grows presence.", source: "Queen OS" },
+    { id: "review-manager", name: "Review Manager", icon: "Star", desc: "Monitor reviews, draft replies, protect reputation.", source: "Queen OS" },
     { id: "menu-ordering", name: "Menu & Ordering", icon: "UtensilsCrossed", desc: "Smart menus, upsells, order automation across channels." },
     { id: "revenue-followup", name: "Revenue Follow-up", icon: "Receipt", desc: "Recover lost bookings and drive repeat stays." },
     { id: "mission-control", name: "Mission Control", icon: "Gauge", desc: "Real-time property performance visibility and alerts." },

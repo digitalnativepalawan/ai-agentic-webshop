@@ -16,6 +16,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminOperatorsRouteImport } from './routes/admin.operators'
 
 const StaysRoute = StaysRouteImport.update({
@@ -53,6 +54,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/admin/orders',
+  path: '/admin/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminOperatorsRoute = AdminOperatorsRouteImport.update({
   id: '/admin/operators',
   path: '/admin/operators',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/mission-control': typeof MissionControlRoute
   '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
+  '/admin/orders': typeof AdminOrdersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/mission-control': typeof MissionControlRoute
   '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
+  '/admin/orders': typeof AdminOrdersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/mission-control': typeof MissionControlRoute
   '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
+  '/admin/orders': typeof AdminOrdersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/mission-control'
     | '/stays'
     | '/admin/operators'
+    | '/admin/orders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/mission-control'
     | '/stays'
     | '/admin/operators'
+    | '/admin/orders'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/mission-control'
     | '/stays'
     | '/admin/operators'
+    | '/admin/orders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   MissionControlRoute: typeof MissionControlRoute
   StaysRoute: typeof StaysRoute
   AdminOperatorsRoute: typeof AdminOperatorsRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/admin/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/operators': {
       id: '/admin/operators'
       path: '/admin/operators'
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   MissionControlRoute: MissionControlRoute,
   StaysRoute: StaysRoute,
   AdminOperatorsRoute: AdminOperatorsRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
