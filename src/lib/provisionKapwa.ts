@@ -35,13 +35,14 @@ export const provisionKapwa = createServerFn({ method: "POST" })
     if (updErr) throw new Error(`Approval failed: ${updErr.message}`);
 
     // 3) Open a Mission Control task for the operator to action.
-    const { error: taskErr } = await supabaseAdmin.from("mission_control_tasks").insert({
+    const { error: taskErr } = await (supabaseAdmin as any).from("mission_control_tasks").insert({
       kind: "onboard_kapwa",
       title: `Onboard KAPWA — ${order.requester_email ?? order.offer_name}`,
       detail: `Order ${order.order_ref} approved. Run Mission Control Setup for ${order.requester_name ?? "property"}.`,
       ref: order.order_ref,
       status: "open",
     });
+
     if (taskErr) console.error("[provision] mc task failed:", taskErr.message);
 
     // 4) Cross-project: create the KAPWA tenant row (env-gated, no secret in repo).

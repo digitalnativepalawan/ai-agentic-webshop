@@ -137,40 +137,7 @@ export type Database = {
         }
         Relationships: []
       }
-      mission_control_tasks: {
-        Row: {
-          id: string
-          kind: string
-          title: string
-          detail: string | null
-          ref: string | null
-          status: Database["public"]["Enums"]["mc_task_status"]
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          kind: string
-          title: string
-          detail?: string | null
-          ref?: string | null
-          status?: Database["public"]["Enums"]["mc_task_status"]
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          kind?: string
-          title?: string
-          detail?: string | null
-          ref?: string | null
-          status?: Database["public"]["Enums"]["mc_task_status"]
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-            user_roles: {
+      user_roles: {
         Row: {
           created_at: string
           id: string
@@ -213,11 +180,6 @@ export type Database = {
         | "payment_pending"
         | "confirmed"
         | "cancelled"
-      mc_task_status:
-        | "open"
-        | "in_progress"
-        | "done"
-        | "blocked"
     }
     CompositeTypes: {
       [_ in never]: never

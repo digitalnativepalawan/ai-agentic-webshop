@@ -43,6 +43,39 @@
       ]
     },
     {
+      "id": "prompt-engineer",
+      "kind": "operator",
+      "category": "marketing",
+      "name": "Prompt Engineer",
+      "tagline": "Turns rough ideas into production-grade prompt contracts for landing pages, web apps, and agent workflows — with requirements analysis, design QA, test cases, and version control.",
+      "pricing": {
+        "amount": 0,
+        "currency": "PHP",
+        "model": "custom_quote"
+      },
+      "agentReadable": true,
+      "humanApprovalRequired": true,
+      "actions": [
+        "browse",
+        "compare",
+        "prepare_checkout",
+        "request_quote",
+        "view_status"
+      ],
+      "capabilities": [
+        "requirements-analysis",
+        "prompt-contract-authoring",
+        "landing-page-prompts",
+        "web-app-prompts",
+        "agent-workflow-prompts",
+        "prompt-critique-and-repair",
+        "test-case-generation",
+        "model-configuration",
+        "version-control",
+        "human-approval-review"
+      ]
+    },
+    {
       "id": "workspace-day-pass",
       "kind": "stay",
       "category": "nomad-stays",
