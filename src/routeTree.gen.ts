@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StaysRouteImport } from './routes/stays'
+import { Route as ResortAgentsRouteImport } from './routes/resort-agents'
 import { Route as MissionControlRouteImport } from './routes/mission-control'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -22,6 +23,11 @@ import { Route as AdminOperatorsRouteImport } from './routes/admin.operators'
 const StaysRoute = StaysRouteImport.update({
   id: '/stays',
   path: '/stays',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResortAgentsRoute = ResortAgentsRouteImport.update({
+  id: '/resort-agents',
+  path: '/resort-agents',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MissionControlRoute = MissionControlRouteImport.update({
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
   '/mission-control': typeof MissionControlRoute
+  '/resort-agents': typeof ResortAgentsRoute
   '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
   '/mission-control': typeof MissionControlRoute
+  '/resort-agents': typeof ResortAgentsRoute
   '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
   '/mission-control': typeof MissionControlRoute
+  '/resort-agents': typeof ResortAgentsRoute
   '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/ecosystem'
     | '/mission-control'
+    | '/resort-agents'
     | '/stays'
     | '/admin/operators'
     | '/admin/orders'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/ecosystem'
     | '/mission-control'
+    | '/resort-agents'
     | '/stays'
     | '/admin/operators'
     | '/admin/orders'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/ecosystem'
     | '/mission-control'
+    | '/resort-agents'
     | '/stays'
     | '/admin/operators'
     | '/admin/orders'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   EcosystemRoute: typeof EcosystemRoute
   MissionControlRoute: typeof MissionControlRoute
+  ResortAgentsRoute: typeof ResortAgentsRoute
   StaysRoute: typeof StaysRoute
   AdminOperatorsRoute: typeof AdminOperatorsRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
@@ -154,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/stays'
       fullPath: '/stays'
       preLoaderRoute: typeof StaysRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resort-agents': {
+      id: '/resort-agents'
+      path: '/resort-agents'
+      fullPath: '/resort-agents'
+      preLoaderRoute: typeof ResortAgentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mission-control': {
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   EcosystemRoute: EcosystemRoute,
   MissionControlRoute: MissionControlRoute,
+  ResortAgentsRoute: ResortAgentsRoute,
   StaysRoute: StaysRoute,
   AdminOperatorsRoute: AdminOperatorsRoute,
   AdminOrdersRoute: AdminOrdersRoute,
@@ -229,3 +250,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

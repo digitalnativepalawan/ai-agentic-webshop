@@ -26,6 +26,7 @@ export const NAV = [
   { label: "AI Operators", to: "/agents" },
   { label: "Stays", to: "/stays" },
   { label: "Ecosystem", to: "/ecosystem" },
+  { label: "Resort Agents", to: "/resort-agents" },
   { label: "Mission Control", to: "/mission-control" },
   { label: "Contact", to: "/contact" },
 ] as const;
