@@ -13,7 +13,8 @@ export const Route = createFileRoute("/agents")({
 });
 
 import { useState } from "react";
-import { Code2 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Code2, Sparkles } from "lucide-react";
 import {
   AGENTIC_CHECKOUT_STEPS,
   HERO_BADGES,
@@ -29,6 +30,7 @@ import { CheckoutSteps } from "@/components/site/CheckoutSteps";
 import { TrustBlock } from "@/components/site/TrustBlock";
 import { CTAButton } from "@/components/site/CTAButton";
 import { Icon } from "@/components/site/Icon";
+
 
 function Operators() {
   const [cat, setCat] = useState<OperatorCategory | "all">("all");
