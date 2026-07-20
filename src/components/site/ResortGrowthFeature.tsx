@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowRight, Megaphone } from "lucide-react";
 import { Icon } from "./Icon";
 import { StatusChip } from "./StatusChip";
+import { getOpenRouterKey, hasOpenRouterKey } from "@/lib/openrouterKey";
 
 /* ------------------------------------------------------------------ *
  * Resort Growth Agent — interactive, playable on the site.
@@ -67,7 +68,6 @@ Write ONE finished ${platform} post in ${langName} that makes ${focus} feel unmi
 }
 
 export function ResortGrowthFeature() {
-  const [key, setKey] = useState("");
   const [platform, setPlatform] = useState("instagram");
   const [lang, setLang] = useState("en");
   const [asset, setAsset] = useState("");
@@ -75,11 +75,13 @@ export function ResortGrowthFeature() {
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const season = seasonNow();
+  const keyReady = hasOpenRouterKey();
 
   async function generate() {
     setError(null);
+    const key = getOpenRouterKey();
     if (!key.trim()) {
-      setError("Paste your OpenRouter key (free models work) to generate a draft.");
+      setError("Connect an OpenRouter key in Operator Admin to generate a draft.");
       return;
     }
     setStreaming(true);
@@ -221,19 +223,9 @@ export function ResortGrowthFeature() {
             />
           </label>
 
-          <label className="flex flex-col gap-1.5 text-[12px] text-muted">
-            OpenRouter API key (optional — free models work)
-            <input
-              type="password"
-              value={key}
-              onChange={(e) => setKey(e.target.value)}
-              placeholder="sk-or-..."
-              className="focus-ring w-full rounded-md border border-line/25 bg-bg/60 px-3 py-2 font-mono text-[12.5px] text-ink placeholder:text-faint"
-            />
-          </label>
-          {key.trim() && (
+          {keyReady && (
             <p className="text-[12px] text-emerald-600">
-              OpenRouter connected — full model list + multilingual unlocked.
+              API key connected in Operator Admin — partners can play without pasting a key.
             </p>
           )}
 

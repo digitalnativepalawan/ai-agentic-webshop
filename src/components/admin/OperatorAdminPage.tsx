@@ -4,6 +4,7 @@ import { OperatorDeleteDialog } from "./OperatorDeleteDialog";
 import { OperatorEditorDialog } from "./OperatorEditorDialog";
 import { useOperatorCatalog, type EditableOperator } from "@/context/OperatorCatalogContext";
 import { useOperatorMedia } from "@/hooks/useOperatorMedia";
+import { getOpenRouterKey, setOpenRouterKey } from "@/lib/openrouterKey";
 
 function blankOperator(order: number): EditableOperator {
   return {
@@ -43,6 +44,7 @@ function OperatorManager() {
   const [editing, setEditing] = useState<EditableOperator | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<EditableOperator | null>(null);
+  const [orKey, setOrKey] = useState(getOpenRouterKey());
 
   useEffect(() => {
     catalog.loadAdmin(passkey).catch((error) => setMessage(error instanceof Error ? error.message : String(error)));
@@ -93,6 +95,29 @@ function OperatorManager() {
       </div>
 
       {message && <p className="mb-4 rounded-md border border-gold/25 bg-gold/5 px-4 py-3 text-sm text-gold">{message}</p>}
+
+      <div className="card flex flex-col gap-3 p-5 md:flex-row md:items-end md:justify-between">
+        <div className="flex-1">
+          <p className="eyebrow !mb-1.5">OpenRouter API key</p>
+          <p className="mb-2 text-sm text-muted">
+            Powers the live Prompt Engineer &amp; Resort Growth widgets on the site. Stored in this browser only
+            (localStorage) — partners play without ever seeing the key.
+          </p>
+          <input
+            type="password"
+            value={orKey}
+            onChange={(e) => setOrKey(e.target.value)}
+            placeholder="sk-or-..."
+            className="focus-ring w-full max-w-md rounded-md border border-line/25 bg-bg/60 px-3 py-2 font-mono text-[12.5px] text-ink placeholder:text-faint"
+          />
+        </div>
+        <button
+          onClick={() => { setOpenRouterKey(orKey); setMessage("OpenRouter key saved for this browser."); }}
+          className="rounded-md bg-gold px-4 py-2 text-sm font-medium text-[#0b0b0b]"
+        >
+          Save key
+        </button>
+      </div>
 
       <div className="grid gap-4">
         {catalog.operators.map((operator) => {
