@@ -87,6 +87,11 @@ function Operators() {
         </div>
       </Section>
 
+      <Section className="!py-4">
+        <PromptEngineerFeature />
+      </Section>
+
+
       <Section className="!py-6">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {operators.map((operator) => <OperatorCard key={operator.id} operator={operator} />)}
