@@ -165,7 +165,43 @@ export const OPERATORS: Operator[] = [
     deploymentScope: KAPWA.deploymentScope,
     includedServices: KAPWA.tiers[1].includedServices,
   },
+  {
+    id: "prompt-engineer",
+    kind: "operator",
+    name: "Prompt Engineer",
+    icon: "Sparkles",
+    tagline:
+      "Turns rough ideas into production-grade prompt contracts for landing pages, web apps, and agent workflows — with requirements analysis, design QA, test cases, and version control.",
+    category: "marketing",
+    badges: [
+      { label: "Production-ready", tone: "gold" },
+      { label: "Prompt QA", tone: "neutral" },
+      { label: "Human approval", tone: "crimson" },
+    ],
+    price: { amount: 0, currency: "PHP", model: "custom_quote", suffix: "custom quote" },
+    humanApprovalRequired: true,
+    agentReadable: true,
+    featured: false,
+    topRated: false,
+    deploymentScope: [
+      "Private client workspace",
+      "OpenRouter or local Ollama",
+      "Versioned prompt library",
+      "Role-based admin controls",
+      "Quality scoring and audit trail",
+    ],
+    includedServices: [
+      "Requirements analysis",
+      "Landing page / web app prompt contracts",
+      "Agent orchestration prompts",
+      "Prompt critique and repair",
+      "Happy-path / edge-case / failure-mode tests",
+      "Model configuration & regression guidance",
+      "Human approval & safety review",
+    ],
+  },
 ];
+
 
 export const FEATURED_OPERATOR_IDS = [
   "kapwa-full",
