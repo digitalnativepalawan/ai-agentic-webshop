@@ -64,14 +64,16 @@ export function OperatorCatalogProvider({ children }: { children: ReactNode }) {
   });
 
   const value = useMemo<OperatorCatalogValue>(() => {
-    // Live DB wins when it returns rows; otherwise fall back to the KAPWA
-    // static catalog so the storefront is always populated.
-    const publicList =
-      publicQuery.data && publicQuery.data.length > 0
-        ? publicQuery.data
-        : STATIC_OPERATORS;
+    // Merge strategy: live DB rows win by id, but any statically-authored
+    // operators (e.g. newly added catalog entries not yet seeded to Supabase)
+    // are still included so the marketplace surfaces them immediately.
+    const dbRows = publicQuery.data ?? [];
+    const dbIds = new Set(dbRows.map((r) => r.id));
+    const staticExtras = STATIC_OPERATORS.filter((s) => !dbIds.has(s.id));
+    const publicList = dbRows.length > 0 ? [...dbRows, ...staticExtras] : STATIC_OPERATORS;
     const adminList = adminQuery.data ?? [];
     const operators = adminList.length > 0 ? adminList : publicList;
+
     return {
       operators,
       visibleOperators: publicList,
