@@ -2,7 +2,8 @@ import { useState } from "react";
 import { ArrowRight, Megaphone } from "lucide-react";
 import { Icon } from "./Icon";
 import { StatusChip } from "./StatusChip";
-import { getOpenRouterKey, hasOpenRouterKey } from "@/lib/openrouterKey";
+import { hasConfig } from "@/lib/agentConfig";
+import { generate } from "@/lib/openrouter";
 
 /* ------------------------------------------------------------------ *
  * Resort Growth Agent — interactive, playable on the site.
@@ -75,71 +76,20 @@ export function ResortGrowthFeature() {
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const season = seasonNow();
-  const keyReady = hasOpenRouterKey();
+  const keyReady = hasConfig();
 
-  async function generate() {
+  async function runGenerate() {
     setError(null);
-    const key = getOpenRouterKey();
-    if (!key.trim()) {
-      setError("Connect an OpenRouter key in Operator Admin to generate a draft.");
+    if (!keyReady) {
+      setError("Connect a model in Operator Admin (OpenRouter or local Ollama) to generate a draft.");
       return;
     }
     setStreaming(true);
     setDraft("");
     const prompt = buildPrompt(platform, lang, asset, season.mode);
-    const body = {
-      model: "google/gemini-2.0-flash-exp:free",
-      stream: true,
-      messages: [
-        { role: "system", content: SYSTEM },
-        { role: "user", content: prompt },
-      ],
-      max_tokens: 700,
-    };
     try {
-      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${key.trim()}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "https://merqato.digital",
-          "X-Title": "Merqato Resort Growth Agent",
-        },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) {
-        const t = await res.text();
-        throw new Error(`OpenRouter ${res.status}: ${t.slice(0, 160)}`);
-      }
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error("No response stream");
-      const decoder = new TextDecoder();
-      let buf = "";
-      let out = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += decoder.decode(value, { stream: true });
-        const parts = buf.split("\n\n");
-        buf = parts.pop() ?? "";
-        for (const chunk of parts) {
-          const line = chunk.trim();
-          if (!line.startsWith("data:")) continue;
-          const data = line.slice(5).trim();
-          if (data === "[DONE]") continue;
-          try {
-            const json = JSON.parse(data);
-            const tok = json.choices?.[0]?.delta?.content;
-            if (tok) {
-              out += tok;
-              setDraft(out);
-            }
-          } catch {
-            /* ignore malformed keepalive */
-          }
-        }
-      }
-      if (!out.trim()) setError("No content returned — try a different model or check the key.");
+      const out = await generate({ system: SYSTEM, user: prompt, maxTokens: 700, onToken: setDraft });
+      if (!out.trim()) setError("No content returned — try a different model or check the connection.");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Generation failed.");
     } finally {
@@ -232,7 +182,7 @@ export function ResortGrowthFeature() {
           <div className="mt-1 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={generate}
+              onClick={runGenerate}
               disabled={streaming}
               className="focus-ring inline-flex items-center gap-2 rounded-md border border-gold bg-gold px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.1em] text-[#0b0b0b] transition-colors hover:bg-gold/90 disabled:opacity-50"
             >

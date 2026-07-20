@@ -4,7 +4,7 @@ import { OperatorDeleteDialog } from "./OperatorDeleteDialog";
 import { OperatorEditorDialog } from "./OperatorEditorDialog";
 import { useOperatorCatalog, type EditableOperator } from "@/context/OperatorCatalogContext";
 import { useOperatorMedia } from "@/hooks/useOperatorMedia";
-import { getOpenRouterKey, setOpenRouterKey } from "@/lib/openrouterKey";
+import { getAgentConfig, setAgentConfig, checkOpenRouter, listOllamaModels, type AgentMode } from "@/lib/agentConfig";
 
 function blankOperator(order: number): EditableOperator {
   return {
@@ -44,7 +44,13 @@ function OperatorManager() {
   const [editing, setEditing] = useState<EditableOperator | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<EditableOperator | null>(null);
-  const [orKey, setOrKey] = useState(getOpenRouterKey());
+  const cfg = getAgentConfig();
+  const [mode, setMode] = useState<AgentMode | null>(cfg.mode);
+  const [keyInput, setKeyInput] = useState(cfg.openrouterKey);
+  const [modelInput, setModelInput] = useState(cfg.model);
+  const [orModels, setOrModels] = useState<string[]>([]);
+  const [status, setStatus] = useState<"idle" | "checking" | "ok" | "bad">("idle");
+  const [statusMsg, setStatusMsg] = useState("");
 
   useEffect(() => {
     catalog.loadAdmin(passkey).catch((error) => setMessage(error instanceof Error ? error.message : String(error)));
@@ -69,6 +75,59 @@ function OperatorManager() {
     else await catalog.updateOperator(originalId ?? operator.id, operator, passkey);
     setEditing(null);
     setMessage(`${operator.name} saved`);
+  }
+
+  async function verify() {
+    setStatus("checking");
+    setStatusMsg("Checking connection…");
+    try {
+      if (mode === "openrouter") {
+        if (!keyInput.trim()) throw new Error("Paste an OpenRouter key first.");
+        const r = await checkOpenRouter(keyInput);
+        if (!r.ok) throw new Error("Key rejected by OpenRouter.");
+        setStatusMsg(`OpenRouter connected — ${r.models.length} models available.`);
+        setStatus("ok");
+      } else if (mode === "ollama") {
+        const r = await listOllamaModels();
+        setOrModels(r.models);
+        if (!r.ok) throw new Error("No Ollama device found at localhost:11434. Is it running?");
+        if (!modelInput && r.models.length) setModelInput(r.models[0]);
+        setStatusMsg(`Ollama live — ${r.models.length} local model(s) found.`);
+        setStatus("ok");
+      } else {
+        throw new Error("Pick OpenRouter or Local Ollama first.");
+      }
+    } catch (e) {
+      setStatus("bad");
+      setStatusMsg(e instanceof Error ? e.message : "Connection failed.");
+    }
+  }
+
+  async function saveConfig() {
+    try {
+      if (mode === "openrouter") {
+        if (!keyInput.trim()) throw new Error("Paste an OpenRouter key.");
+        const r = await checkOpenRouter(keyInput);
+        if (!r.ok) throw new Error("Key rejected by OpenRouter.");
+        setAgentConfig({ mode: "openrouter", openrouterKey: keyInput.trim(), model: modelInput.trim() || r.models[0] });
+        setStatusMsg(`OpenRouter connected — ${r.models.length} models.`);
+        setStatus("ok");
+      } else if (mode === "ollama") {
+        if (!modelInput.trim()) throw new Error("Select a local Ollama model.");
+        const r = await listOllamaModels();
+        setOrModels(r.models);
+        if (!r.models.includes(modelInput.trim())) throw new Error("That model isn't on your device.");
+        setAgentConfig({ mode: "ollama", openrouterKey: "", model: modelInput.trim() });
+        setStatusMsg(`Ollama live — using ${modelInput.trim()}.`);
+        setStatus("ok");
+      } else {
+        throw new Error("Pick OpenRouter or Local Ollama first.");
+      }
+      setMessage("Agent brain connected.");
+    } catch (e) {
+      setStatus("bad");
+      setStatusMsg(e instanceof Error ? e.message : "Save failed.");
+    }
   }
 
   const editingMedia = editing
@@ -96,27 +155,113 @@ function OperatorManager() {
 
       {message && <p className="mb-4 rounded-md border border-gold/25 bg-gold/5 px-4 py-3 text-sm text-gold">{message}</p>}
 
-      <div className="card flex flex-col gap-3 p-5 md:flex-row md:items-end md:justify-between">
-        <div className="flex-1">
-          <p className="eyebrow !mb-1.5">OpenRouter API key</p>
-          <p className="mb-2 text-sm text-muted">
-            Powers the live Prompt Engineer &amp; Resort Growth widgets on the site. Stored in this browser only
-            (localStorage) — partners play without ever seeing the key.
-          </p>
-          <input
-            type="password"
-            value={orKey}
-            onChange={(e) => setOrKey(e.target.value)}
-            placeholder="sk-or-..."
-            className="focus-ring w-full max-w-md rounded-md border border-line/25 bg-bg/60 px-3 py-2 font-mono text-[12.5px] text-ink placeholder:text-faint"
-          />
+      {/* AGENT MODEL CONFIG */}
+      <div className="card flex flex-col gap-4 p-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="eyebrow !mb-1.5">Agent brain</p>
+            <h3 className="font-display text-xl font-medium">Connect a model</h3>
+          </div>
+          {status === "ok" && (
+            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[12px] font-medium text-emerald-600">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" /> {mode === "ollama" ? "Ollama live" : "OpenRouter live"}
+            </span>
+          )}
+          {status === "bad" && (
+            <span className="inline-flex items-center gap-2 rounded-full border border-crimson/40 bg-crimson/10 px-3 py-1 text-[12px] font-medium text-crimson">
+              <span className="h-2 w-2 rounded-full bg-crimson" /> not connected
+            </span>
+          )}
         </div>
-        <button
-          onClick={() => { setOpenRouterKey(orKey); setMessage("OpenRouter key saved for this browser."); }}
-          className="rounded-md bg-gold px-4 py-2 text-sm font-medium text-[#0b0b0b]"
-        >
-          Save key
-        </button>
+
+        <p className="text-sm text-muted">
+          Pick one — OpenRouter (cloud, paste a key) or your local Ollama device. The green light confirms it's
+          reachable. The site widgets use whichever you connect. No default; partners play without a key.
+        </p>
+
+        {/* mode toggle */}
+        <div className="flex flex-wrap gap-2">
+          {(["openrouter", "ollama"] as AgentMode[]).map((m) => (
+            <button
+              key={m}
+              onClick={() => { setMode(m); setStatus("idle"); setStatusMsg(""); if (m === "ollama") verify(); }}
+              className={`focus-ring rounded-md border px-4 py-2 text-sm ${mode === m ? "border-gold bg-gold/[0.08] text-gold" : "border-line/30 text-muted hover:border-gold/40"}`}
+            >
+              {m === "openrouter" ? "OpenRouter (cloud)" : "Local Ollama (device)"}
+            </button>
+          ))}
+        </div>
+
+        {/* openrouter fields */}
+        {mode === "openrouter" && (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-[12px] text-muted">
+              OpenRouter API key
+              <input
+                type="password"
+                value={keyInput}
+                onChange={(e) => setKeyInput(e.target.value)}
+                placeholder="sk-or-..."
+                className="focus-ring w-full rounded-md border border-line/25 bg-bg/60 px-3 py-2 font-mono text-[12.5px] text-ink placeholder:text-faint"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-[12px] text-muted">
+              Model
+              <input
+                value={modelInput}
+                onChange={(e) => setModelInput(e.target.value)}
+                placeholder="e.g. google/gemini-2.0-flash-exp:free"
+                className="focus-ring w-full rounded-md border border-line/25 bg-bg/60 px-3 py-2 font-mono text-[12.5px] text-ink placeholder:text-faint"
+              />
+            </label>
+          </div>
+        )}
+
+        {/* ollama fields */}
+        {mode === "ollama" && (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-[12px] text-muted">
+              Local Ollama model (synced from your device)
+              <select
+                value={modelInput}
+                onChange={(e) => setModelInput(e.target.value)}
+                className="focus-ring w-full rounded-md border border-line/25 bg-bg/60 px-3 py-2 text-[13px] text-ink"
+              >
+                <option value="">— select a local model —</option>
+                {orModels.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </label>
+            <div className="flex items-end">
+              <button
+                onClick={verify}
+                className="focus-ring rounded-md border border-line/30 px-4 py-2 text-sm text-muted hover:border-gold/40"
+              >
+                Sync models from device
+              </button>
+            </div>
+          </div>
+        )}
+
+        {statusMsg && (
+          <p className={`text-[12px] ${status === "ok" ? "text-emerald-600" : "text-crimson"}`}>{statusMsg}</p>
+        )}
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={saveConfig}
+            className="rounded-md bg-gold px-4 py-2 text-sm font-medium text-[#0b0b0b]"
+          >
+            Save &amp; connect
+          </button>
+          <button
+            onClick={() => { setAgentConfig({ mode: null, openrouterKey: "", model: "" }); setMode(null); setStatus("idle"); setStatusMsg(""); setMessage("Agent config cleared."); }}
+            className="rounded-md border border-line px-4 py-2 text-sm"
+          >
+            Clear
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-4">

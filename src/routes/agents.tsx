@@ -22,8 +22,8 @@ import {
   OPERATOR_WHY,
 } from "@/lib/site-data";
 import type { OperatorCategory } from "@/lib/types";
-import { getOpenRouterKey, hasOpenRouterKey } from "@/lib/openrouterKey";
-import { streamOpenRouter } from "@/lib/openrouter";
+import { hasConfig } from "@/lib/agentConfig";
+import { generate } from "@/lib/openrouter";
 import { useOperatorCatalog } from "@/context/OperatorCatalogContext";
 import { Section, Eyebrow, HeroBackdrop } from "@/components/site/Section";
 import { StatusChip } from "@/components/site/StatusChip";
@@ -156,7 +156,7 @@ function PromptEngineerFeature() {
   const [phase, setPhase] = useState<"idle" | "questions" | "contract">("idle");
   const [busy, setBusy] = useState<"" | "q" | "c">("");
   const [error, setError] = useState<string | null>(null);
-  const keyReady = hasOpenRouterKey();
+  const keyReady = hasConfig();
 
   async function analyze() {
     setError(null);
@@ -169,12 +169,12 @@ function PromptEngineerFeature() {
     setContract("");
     setPhase("idle");
     try {
-      const out = await streamOpenRouter(
-        PE_SYSTEM,
-        `ROUGH REQUEST: "${request.trim()}"\n\nStep 1 — List the requirements to clarify (numbered, with a one-line why). Be specific to this request.`,
-        getOpenRouterKey(),
-        { maxTokens: 700, onToken: setQuestions },
-      );
+      const out = await generate({
+        system: PE_SYSTEM,
+        user: `ROUGH REQUEST: "${request.trim()}"\n\nStep 1 — List the requirements to clarify (numbered, with a one-line why). Be specific to this request.`,
+        maxTokens: 700,
+        onToken: setQuestions,
+      });
       setQuestions(out);
       setPhase("questions");
     } catch (e) {
@@ -189,12 +189,12 @@ function PromptEngineerFeature() {
     setBusy("c");
     setContract("");
     try {
-      const out = await streamOpenRouter(
-        PE_SYSTEM,
-        `ROUGH REQUEST: "${request.trim()}"\n\nCLARIFIED REQUIREMENTS (from prior step):\n${questions}\n\nStep 2 — Write the full production prompt contract: role, goal, audience, constraints, output format, model config, guardrails, and 2-3 test cases.`,
-        getOpenRouterKey(),
-        { maxTokens: 900, onToken: setContract },
-      );
+      const out = await generate({
+        system: PE_SYSTEM,
+        user: `ROUGH REQUEST: "${request.trim()}"\n\nCLARIFIED REQUIREMENTS (from prior step):\n${questions}\n\nStep 2 — Write the full production prompt contract: role, goal, audience, constraints, output format, model config, guardrails, and 2-3 test cases.`,
+        maxTokens: 900,
+        onToken: setContract,
+      });
       setContract(out);
       setPhase("contract");
     } catch (e) {
