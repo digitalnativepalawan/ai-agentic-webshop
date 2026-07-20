@@ -30,6 +30,7 @@ import { CheckoutSteps } from "@/components/site/CheckoutSteps";
 import { TrustBlock } from "@/components/site/TrustBlock";
 import { CTAButton } from "@/components/site/CTAButton";
 import { Icon } from "@/components/site/Icon";
+import { ResortGrowthFeature } from "@/components/site/ResortGrowthFeature";
 
 
 function Operators() {
@@ -89,6 +90,10 @@ function Operators() {
 
       <Section className="!py-4">
         <PromptEngineerFeature />
+      </Section>
+
+      <Section className="!py-4">
+        <ResortGrowthFeature />
       </Section>
 
 
