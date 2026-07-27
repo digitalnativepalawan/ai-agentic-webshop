@@ -22,7 +22,6 @@ import { CTAButton } from "@/components/site/CTAButton";
 import { OfferCard } from "@/components/site/OfferCard";
 import { OperatorCard } from "@/components/site/OperatorCard";
 import { TrustBlock } from "@/components/site/TrustBlock";
-import { MissionControlPreview } from "@/components/site/MissionControlPreview";
 import { Icon } from "@/components/site/Icon";
 
 function Home() {
@@ -54,7 +53,7 @@ function Home() {
 
           <div className="mt-8 flex flex-wrap gap-3">
             <CTAButton to="/agents" variant="primary">Browse AI Operators</CTAButton>
-            <CTAButton to="/mission-control" variant="ghost">See Mission Control</CTAButton>
+            <CTAButton to="/contact" variant="ghost">Talk to Us</CTAButton>
           </div>
 
           {/* Dual entry points: human browse + agent/manifest path (skill Rule 2) */}
@@ -90,21 +89,6 @@ function Home() {
       <Section className="!pt-2">
         <Eyebrow>Buy with confidence</Eyebrow>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">{BUY_WITH_CONFIDENCE.map((point) => <TrustBlock key={point.title} point={point} />)}</div>
-      </Section>
-
-      <Section className="!pt-2">
-        <div className="mb-6 flex items-center justify-between">
-          <Eyebrow>Mission Control preview</Eyebrow>
-          <Link to="/mission-control" className="focus-ring -mt-4 inline-flex items-center gap-1.5 text-[13px] text-gold hover:text-gold-soft">Explore Mission Control <ArrowRight size={14} /></Link>
-        </div>
-        <div className="card grid items-center gap-8 p-6 lg:grid-cols-[0.9fr_1.6fr] lg:p-8">
-          <div>
-            <h2 className="font-display text-[clamp(1.8rem,4vw,2.6rem)] font-medium leading-tight">Run operations.<br />See what matters.</h2>
-            <p className="mt-4 text-[14px] leading-relaxed text-muted">Mission Control gives you real-time visibility across bookings, AI operators, guests, and performance.</p>
-            <div className="mt-6"><CTAButton to="/mission-control" variant="ghost">See it in action</CTAButton></div>
-          </div>
-          <MissionControlPreview />
-        </div>
       </Section>
     </>
   );

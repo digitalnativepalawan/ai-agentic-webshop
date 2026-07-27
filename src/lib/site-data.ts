@@ -25,7 +25,6 @@ export const NAV = [
   { label: "AI Operators", to: "/agents" },
   { label: "Ecosystem", to: "/ecosystem" },
   { label: "Resort Agents", to: "/resort-agents" },
-  { label: "Mission Control", to: "/mission-control" },
   { label: "Contact", to: "/contact" },
 ] as const;
 
@@ -49,7 +48,6 @@ export const OPERATOR_CATEGORIES: {
   { id: "marketing", label: "Marketing", icon: "Megaphone" },
   { id: "lead-gen", label: "Lead Gen", icon: "Target" },
   { id: "operations", label: "Operations", icon: "Rocket" },
-  { id: "mission-control", label: "Mission Control", icon: "Gauge" },
   { id: "local-business", label: "Local Business", icon: "Store" },
 ];
 
@@ -82,7 +80,6 @@ export const KAPWA = {
     { id: "review-manager", name: "Review Manager", icon: "Star", desc: "Monitor reviews, draft replies, protect reputation.", source: "Queen OS" },
     { id: "menu-ordering", name: "Menu & Ordering", icon: "UtensilsCrossed", desc: "Smart menus, upsells, order automation across channels." },
     { id: "revenue-followup", name: "Revenue Follow-up", icon: "Receipt", desc: "Recover lost bookings and drive repeat stays." },
-    { id: "mission-control", name: "Mission Control", icon: "Gauge", desc: "Real-time property performance visibility and alerts." },
   ],
   // Three tiers of the same KAPWA product.
   tiers: [
@@ -124,20 +121,12 @@ export const KAPWA = {
       includedServices: [
         "All Full modules",
         "Menu & Ordering",
-        "Mission Control dashboards",
         "Multi-property support",
         "Custom system integrations",
         "Dedicated onboarding",
       ] as string[],
     },
   ],
-  // One-time activation (Mission Control setup) — separate from subscription.
-  setup: {
-    id: "mission-control-setup",
-    name: "Mission Control Setup",
-    price: { amount: 19999, currency: "PHP", model: "one_time_setup", suffix: "one-time" },
-    includedServices: ["Property Onboarding", "Systems & Data Connection", "Dashboard Configuration", "Team Training"] as string[],
-  },
 } as const;
 
 // Backwards-compatible operator list for the /agents grid + machine-readable catalog.
@@ -149,7 +138,7 @@ export const OPERATORS: Operator[] = [
     name: `${KAPWA.name} — Full`,
     icon: KAPWA.icon,
     tagline:
-      "The complete AI back office for resorts — guest service, bookings, lead gen, social, reviews, menu & ordering, revenue follow-up, and Mission Control, all coordinated with human approval.",
+      "The complete AI back office for resorts — guest service, bookings, lead gen, social, reviews, menu & ordering, and revenue follow-up, all coordinated with human approval.",
     category: "hospitality",
     badges: [
       { label: "The main operator", tone: "gold" },
@@ -218,11 +207,10 @@ export const PARTNERSHIPS: Partnership[] = [
     kind: "partnership",
     name: "Property Partner",
     icon: "Building2",
-    audience: "Hotels, resorts, villas, and serviced stays.",
+    audience: "Hotels, resorts, villas, and serviced properties.",
     valueForPartner: [
       "Increased direct bookings",
       "AI-powered pricing & ops",
-      "Mission Control visibility",
       "Performance insights",
     ],
   },
@@ -319,11 +307,11 @@ export const OPERATOR_WHY: TrustPoint[] = [
   { icon: "Plus", title: "Transparent pricing", body: "Clear monthly rates or one-time fees. No hidden costs." },
   { icon: "ShieldCheck", title: "Safe by design", body: "Human approval before any deployment or charge." },
   { icon: "Users", title: "Human + AI together", body: "AI speed with human judgment for reliability." },
-  { icon: "Gauge", title: "Mission Control proof", body: "Every operator is trackable with real-time results." },
+  { icon: "Gauge", title: "Proof of work", body: "Every operator is trackable with real-time results." },
 ];
 
 /* ------------------------------------------------------------------ *
- * Home page trust + what-you-can-do
+ * Operator checkout process (shared on /agents + /checkout)
  * ------------------------------------------------------------------ */
 export const WHAT_YOU_CAN_DO = [
   {
@@ -346,7 +334,7 @@ export const BUY_WITH_CONFIDENCE: TrustPoint[] = [
   { icon: "ShieldCheck", title: "AI agents welcome here", body: "Our platform is designed for AI agents and their humans — structured, clear, and machine-friendly." },
   { icon: "UserCheck", title: "Human approval before payment or deployment", body: "Every purchase and deployment requires human validation for safety and quality." },
   { icon: "Lock", title: "Structured checkout for people and AI agents", body: "Transparent pricing, clear terms, and agent-readable confirmations." },
-  { icon: "LineChart", title: "Proof of work through Mission Control", body: "Track performance, approvals, and results in real time." },
+  { icon: "LineChart", title: "Proof of work", body: "Track performance, approvals, and results in real time." },
 ];
 
 export const CHECKOUT_TRUST: TrustPoint[] = [
@@ -357,15 +345,8 @@ export const CHECKOUT_TRUST: TrustPoint[] = [
 ];
 
 /* ------------------------------------------------------------------ *
- * Mission Control preview metrics (demo only)
+ * Operator checkout process (shared on /agents + /checkout)
  * ------------------------------------------------------------------ */
-export const MISSION_CONTROL_METRICS: Stat[] = [
-  { value: "128", label: "Bookings", sub: "▲ 12.4% vs yesterday" },
-  { value: "18", label: "Active Operators", sub: "▲ 8.7% vs yesterday" },
-  { value: "346", label: "Guests Served", sub: "▲ 15.2% vs yesterday" },
-  { value: "₱1.24M", label: "Revenue", sub: "▲ 18.3% vs yesterday" },
-];
-
 export function formatPHP(amount: number): string {
   return "₱" + amount.toLocaleString("en-PH");
 }

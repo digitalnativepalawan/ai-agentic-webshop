@@ -121,11 +121,6 @@
       "id": "ecosystem-partnerships",
       "path": "/ecosystem",
       "label": "Ecosystem Partnerships"
-    },
-    {
-      "id": "mission-control",
-      "path": "/mission-control",
-      "label": "Mission Control"
     }
   ]
 }

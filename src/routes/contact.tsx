@@ -19,7 +19,7 @@ import { Section, Eyebrow, HeroBackdrop } from "@/components/site/Section";
 import { StatusChip } from "@/components/site/StatusChip";
 import { CTAButton } from "@/components/site/CTAButton";
 
-const TOPICS = ["AI Operators", "Ecosystem Partnership", "Mission Control setup"];
+const TOPICS = ["AI Operators", "Ecosystem Partnership"];
 
 function Contact() {
   const [sent, setSent] = useState(false);

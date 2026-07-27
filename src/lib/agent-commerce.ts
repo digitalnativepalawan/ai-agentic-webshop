@@ -78,7 +78,7 @@ export function buildAgentManifest(): AgentManifest {
       requestEndpoint: APPROVAL.endpoint,
       statusEndpoint: APPROVAL.statusEndpoint,
     },
-    categories: ["ai-operators", "ecosystem-partnerships", "mission-control"],
+    categories: ["ai-operators", "ecosystem-partnerships"],
     offers: [...operatorOffers, ...partnershipOffers],
   };
 }

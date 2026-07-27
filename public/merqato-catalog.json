@@ -6,8 +6,7 @@
   "humanApprovalRequired": true,
   "categories": [
     "ai-operators",
-    "ecosystem-partnerships",
-    "mission-control"
+    "ecosystem-partnerships"
   ],
   "offers": [
     {
@@ -15,7 +14,7 @@
       "kind": "operator",
       "category": "hospitality",
       "name": "KAPWA — Full",
-      "tagline": "The complete AI back office for resorts: guest service, bookings, lead gen, social, reviews, menu & ordering, revenue follow-up, and Mission Control — with human approval.",
+      "tagline": "The complete AI back office for resorts: guest service, bookings, lead gen, social, reviews, menu & ordering, revenue follow-up — with human approval.",
       "pricing": {
         "amount": 7999,
         "currency": "PHP",
@@ -37,8 +36,7 @@
         "social-media",
         "review-manager",
         "menu-ordering",
-        "revenue-followup",
-        "mission-control"
+        "revenue-followup"
       ]
     },
     {

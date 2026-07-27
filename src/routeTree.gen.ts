@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResortAgentsRouteImport } from './routes/resort-agents'
-import { Route as MissionControlRouteImport } from './routes/mission-control'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -22,11 +21,6 @@ import { Route as AdminOperatorsRouteImport } from './routes/admin.operators'
 const ResortAgentsRoute = ResortAgentsRouteImport.update({
   id: '/resort-agents',
   path: '/resort-agents',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MissionControlRoute = MissionControlRouteImport.update({
-  id: '/mission-control',
-  path: '/mission-control',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EcosystemRoute = EcosystemRouteImport.update({
@@ -71,7 +65,6 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
-  '/mission-control': typeof MissionControlRoute
   '/resort-agents': typeof ResortAgentsRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -82,7 +75,6 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
-  '/mission-control': typeof MissionControlRoute
   '/resort-agents': typeof ResortAgentsRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -94,7 +86,6 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
-  '/mission-control': typeof MissionControlRoute
   '/resort-agents': typeof ResortAgentsRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -107,7 +98,6 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/ecosystem'
-    | '/mission-control'
     | '/resort-agents'
     | '/admin/operators'
     | '/admin/orders'
@@ -118,7 +108,6 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/ecosystem'
-    | '/mission-control'
     | '/resort-agents'
     | '/admin/operators'
     | '/admin/orders'
@@ -129,7 +118,6 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/ecosystem'
-    | '/mission-control'
     | '/resort-agents'
     | '/admin/operators'
     | '/admin/orders'
@@ -141,7 +129,6 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   EcosystemRoute: typeof EcosystemRoute
-  MissionControlRoute: typeof MissionControlRoute
   ResortAgentsRoute: typeof ResortAgentsRoute
   AdminOperatorsRoute: typeof AdminOperatorsRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
@@ -154,13 +141,6 @@ declare module '@tanstack/react-router' {
       path: '/resort-agents'
       fullPath: '/resort-agents'
       preLoaderRoute: typeof ResortAgentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mission-control': {
-      id: '/mission-control'
-      path: '/mission-control'
-      fullPath: '/mission-control'
-      preLoaderRoute: typeof MissionControlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ecosystem': {
@@ -221,7 +201,6 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   EcosystemRoute: EcosystemRoute,
-  MissionControlRoute: MissionControlRoute,
   ResortAgentsRoute: ResortAgentsRoute,
   AdminOperatorsRoute: AdminOperatorsRoute,
   AdminOrdersRoute: AdminOrdersRoute,

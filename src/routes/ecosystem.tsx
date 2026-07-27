@@ -88,7 +88,7 @@ function Ecosystem() {
       <Section className="!pt-2">
         <Eyebrow>What partners see</Eyebrow>
         <p className="-mt-3 mb-6 text-[13px] text-muted">
-          Mission Control gives partners the right visibility — without exposing sensitive admin
+          Partners get the right visibility — without exposing sensitive admin
           data.
         </p>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

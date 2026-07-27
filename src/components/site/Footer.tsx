@@ -17,7 +17,6 @@ const COLUMNS = [
     heading: "Company",
     links: [
       { label: "About Us", to: "/contact" },
-      { label: "Mission", to: "/mission-control" },
       { label: "Careers", to: "/contact" },
       { label: "Contact Us", to: "/contact" },
     ],
@@ -28,7 +27,7 @@ const COLUMNS = [
       { label: "Help Center", to: "/contact" },
       { label: "Guides", to: "/contact" },
       { label: "API for Agents", to: "/checkout" },
-      { label: "Status", to: "/mission-control" },
+      { label: "Status", to: "/ecosystem" },
     ],
   },
 ];
