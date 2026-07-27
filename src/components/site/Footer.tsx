@@ -9,7 +9,6 @@ const COLUMNS = [
     heading: "Marketplace",
     links: [
       { label: "AI Operators", to: "/agents" },
-      { label: "Nomad Stays", to: "/stays" },
       { label: "Ecosystem Partnerships", to: "/ecosystem" },
       { label: "All Categories", to: "/agents" },
     ],

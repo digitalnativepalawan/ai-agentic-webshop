@@ -4,9 +4,9 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: 'Contact — Merqato' },
-      { name: "description", content: 'Talk to the Merqato team about operators, stays, or ecosystem partnerships.' },
+      { name: "description", content: 'Talk to the Merqato team about operators or ecosystem partnerships.' },
       { property: "og:title", content: 'Contact — Merqato' },
-      { property: "og:description", content: 'Talk to the Merqato team about operators, stays, or ecosystem partnerships.' },
+      { property: "og:description", content: 'Talk to the Merqato team about operators or ecosystem partnerships.' },
     ],
   }),
   component: Contact,
@@ -19,7 +19,7 @@ import { Section, Eyebrow, HeroBackdrop } from "@/components/site/Section";
 import { StatusChip } from "@/components/site/StatusChip";
 import { CTAButton } from "@/components/site/CTAButton";
 
-const TOPICS = ["AI Operators", "Nomad Stays", "Ecosystem Partnership", "Mission Control setup"];
+const TOPICS = ["AI Operators", "Ecosystem Partnership", "Mission Control setup"];
 
 function Contact() {
   const [sent, setSent] = useState(false);
@@ -44,7 +44,7 @@ function Contact() {
             Let's build <span className="text-gold">together.</span>
           </h1>
           <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted">
-            Request an operator, a stay, or a partnership call. A real person from our Palawan team
+            Request an operator or a partnership call. A real person from our Palawan team
             reviews and replies — no bots closing deals.
           </p>
         </div>

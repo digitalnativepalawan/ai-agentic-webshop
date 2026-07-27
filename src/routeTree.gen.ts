@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as StaysRouteImport } from './routes/stays'
 import { Route as ResortAgentsRouteImport } from './routes/resort-agents'
 import { Route as MissionControlRouteImport } from './routes/mission-control'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
@@ -20,11 +19,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminOperatorsRouteImport } from './routes/admin.operators'
 
-const StaysRoute = StaysRouteImport.update({
-  id: '/stays',
-  path: '/stays',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ResortAgentsRoute = ResortAgentsRouteImport.update({
   id: '/resort-agents',
   path: '/resort-agents',
@@ -79,7 +73,6 @@ export interface FileRoutesByFullPath {
   '/ecosystem': typeof EcosystemRoute
   '/mission-control': typeof MissionControlRoute
   '/resort-agents': typeof ResortAgentsRoute
-  '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
 }
@@ -91,7 +84,6 @@ export interface FileRoutesByTo {
   '/ecosystem': typeof EcosystemRoute
   '/mission-control': typeof MissionControlRoute
   '/resort-agents': typeof ResortAgentsRoute
-  '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
 }
@@ -104,7 +96,6 @@ export interface FileRoutesById {
   '/ecosystem': typeof EcosystemRoute
   '/mission-control': typeof MissionControlRoute
   '/resort-agents': typeof ResortAgentsRoute
-  '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
 }
@@ -118,7 +109,6 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/mission-control'
     | '/resort-agents'
-    | '/stays'
     | '/admin/operators'
     | '/admin/orders'
   fileRoutesByTo: FileRoutesByTo
@@ -130,7 +120,6 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/mission-control'
     | '/resort-agents'
-    | '/stays'
     | '/admin/operators'
     | '/admin/orders'
   id:
@@ -142,7 +131,6 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/mission-control'
     | '/resort-agents'
-    | '/stays'
     | '/admin/operators'
     | '/admin/orders'
   fileRoutesById: FileRoutesById
@@ -155,20 +143,12 @@ export interface RootRouteChildren {
   EcosystemRoute: typeof EcosystemRoute
   MissionControlRoute: typeof MissionControlRoute
   ResortAgentsRoute: typeof ResortAgentsRoute
-  StaysRoute: typeof StaysRoute
   AdminOperatorsRoute: typeof AdminOperatorsRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/stays': {
-      id: '/stays'
-      path: '/stays'
-      fullPath: '/stays'
-      preLoaderRoute: typeof StaysRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/resort-agents': {
       id: '/resort-agents'
       path: '/resort-agents'
@@ -243,7 +223,6 @@ const rootRouteChildren: RootRouteChildren = {
   EcosystemRoute: EcosystemRoute,
   MissionControlRoute: MissionControlRoute,
   ResortAgentsRoute: ResortAgentsRoute,
-  StaysRoute: StaysRoute,
   AdminOperatorsRoute: AdminOperatorsRoute,
   AdminOrdersRoute: AdminOrdersRoute,
 }

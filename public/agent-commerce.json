@@ -6,7 +6,7 @@
     "name": "merQato.digital",
     "legalName": "merQato Digital",
     "location": "San Vicente, Palawan, Philippines",
-    "mission": "The marketplace where people and AI agents safely discover, compare, and request AI Operators, Palawan stays, and digital infrastructure.",
+    "mission": "The marketplace where people and AI agents safely discover, compare, and request AI Operators and digital infrastructure.",
     "contact": {
       "email": "hello@merqato.digital",
       "checkoutPath": "/checkout",
@@ -39,10 +39,6 @@
     {
       "action": "prepare_checkout",
       "description": "Assemble an order for human review."
-    },
-    {
-      "action": "request_availability",
-      "description": "Ask for stay availability on given dates."
     },
     {
       "action": "request_setup",
@@ -120,11 +116,6 @@
       "id": "ai-operators",
       "path": "/agents",
       "label": "AI Operators"
-    },
-    {
-      "id": "nomad-stays",
-      "path": "/stays",
-      "label": "Nomad Stays"
     },
     {
       "id": "ecosystem-partnerships",

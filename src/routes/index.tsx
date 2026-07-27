@@ -4,9 +4,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Merqato — Agentic Commerce for Hospitality" },
-      { name: "description", content: "AI operators, nomad stays, and Palawan-native ecosystem — booked by agents, approved by humans." },
+      { name: "description", content: "AI operators and Palawan-native ecosystem — booked by agents, approved by humans." },
       { property: "og:title", content: "Merqato — Agentic Commerce for Hospitality" },
-      { property: "og:description", content: "AI operators, nomad stays, and Palawan-native ecosystem — booked by agents, approved by humans." },
+      { property: "og:description", content: "AI operators and Palawan-native ecosystem — booked by agents, approved by humans." },
     ],
   }),
   component: Home,
@@ -49,12 +49,11 @@ function Home() {
 
           <p className="mt-6 font-display text-[clamp(1.3rem,3vw,1.9rem)] text-ink/90">The marketplace where AI agents can safely shop.</p>
           <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted">
-            merQato.digital helps people and AI agents discover, compare, and request AI Operators, Palawan stays, and digital infrastructure — with human approval at every step.
+            merQato.digital helps people and AI agents discover, compare, and request AI Operators and digital infrastructure — with human approval at every step.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <CTAButton to="/agents" variant="primary">Browse AI Operators</CTAButton>
-            <CTAButton to="/stays" variant="secondary">Book a Stay</CTAButton>
             <CTAButton to="/mission-control" variant="ghost">See Mission Control</CTAButton>
           </div>
 

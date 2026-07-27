@@ -19,7 +19,7 @@ import { Footer } from "../components/site/Footer";
 
 const SITE_TITLE = "Merqato — Agentic Commerce for Hospitality";
 const SITE_DESC =
-  "AI operators, nomad stays, and Palawan-native ecosystem — booked by agents, approved by humans.";
+  "AI operators and Palawan-native ecosystem — booked by agents, approved by humans.";
 
 function NotFoundComponent() {
   return (

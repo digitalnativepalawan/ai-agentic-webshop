@@ -5,7 +5,7 @@ import type {
   Operator,
   OrderDraft,
 } from "./types";
-import { OPERATORS, PARTNERSHIPS, STAYS } from "./site-data";
+import { OPERATORS, PARTNERSHIPS } from "./site-data";
 
 /* ============================================================
    Human-in-the-loop rules for the whole marketplace.
@@ -115,20 +115,6 @@ export function resolveOrderDraft(offerId: string): OrderDraft | null {
       lineItems: s.lineItems,
       totalAmount: s.totalToday,
       currency: s.currency,
-      requiresQuote: false,
-    };
-  }
-
-  const stay = STAYS.find((s) => s.id === offerId);
-  if (stay) {
-    return {
-      offerId: stay.id,
-      offerKind: stay.kind,
-      offerName: stay.name,
-      plan: stay.tagline,
-      lineItems: [{ label: stay.name, amount: stay.price.amount, currency: stay.price.currency }],
-      totalAmount: stay.price.amount,
-      currency: stay.price.currency,
       requiresQuote: false,
     };
   }

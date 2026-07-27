@@ -16,7 +16,6 @@
   "routes": [
     { "path": "/", "name": "Home" },
     { "path": "/agents", "name": "AI Operators" },
-    { "path": "/stays", "name": "Nomad Stays" },
     { "path": "/ecosystem", "name": "Ecosystem Partnerships" },
     { "path": "/checkout", "name": "Agentic Checkout" },
     { "path": "/mission-control", "name": "Mission Control" },

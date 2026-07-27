@@ -1,5 +1,5 @@
 import { AGENT_ALLOWED, APPROVAL, HUMAN_GATED } from "./checkout-rules";
-import { BRAND, OPERATORS, PARTNERSHIPS, STAYS } from "./site-data";
+import { BRAND, OPERATORS, PARTNERSHIPS } from "./site-data";
 
 /* ============================================================
    Programmatic view of the marketplace for AI agents.
@@ -53,16 +53,6 @@ export function buildAgentManifest(): AgentManifest {
     actions: ["browse", "compare", "prepare_checkout", "request_setup", "view_status"],
   }));
 
-  const stayOffers: AgentOffer[] = STAYS.map((s) => ({
-    id: s.id,
-    kind: s.kind,
-    name: s.name,
-    pricing: { amount: s.price.amount, currency: s.price.currency, model: s.price.model },
-    humanApprovalRequired: true,
-    agentReadable: true,
-    actions: ["browse", "compare", "request_availability", "view_status"],
-  }));
-
   const partnershipOffers: AgentOffer[] = PARTNERSHIPS.map((p) => ({
     id: p.id,
     kind: p.kind,
@@ -88,7 +78,7 @@ export function buildAgentManifest(): AgentManifest {
       requestEndpoint: APPROVAL.endpoint,
       statusEndpoint: APPROVAL.statusEndpoint,
     },
-    categories: ["ai-operators", "nomad-stays", "ecosystem-partnerships", "mission-control"],
-    offers: [...operatorOffers, ...stayOffers, ...partnershipOffers],
+    categories: ["ai-operators", "ecosystem-partnerships", "mission-control"],
+    offers: [...operatorOffers, ...partnershipOffers],
   };
 }

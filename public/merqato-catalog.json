@@ -6,7 +6,6 @@
   "humanApprovalRequired": true,
   "categories": [
     "ai-operators",
-    "nomad-stays",
     "ecosystem-partnerships",
     "mission-control"
   ],
@@ -73,86 +72,6 @@
         "model-configuration",
         "version-control",
         "human-approval-review"
-      ]
-    },
-    {
-      "id": "workspace-day-pass",
-      "kind": "stay",
-      "category": "nomad-stays",
-      "name": "Workspace Day Pass",
-      "tagline": "Focus for the day. Work, connect, ship.",
-      "pricing": {
-        "amount": 999,
-        "currency": "PHP",
-        "model": "per_day"
-      },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": [
-        "browse",
-        "compare",
-        "request_availability",
-        "view_status"
-      ]
-    },
-    {
-      "id": "weekly-sprint",
-      "kind": "stay",
-      "category": "nomad-stays",
-      "name": "Weekly Sprint",
-      "tagline": "One week to focus and make progress.",
-      "pricing": {
-        "amount": 4999,
-        "currency": "PHP",
-        "model": "per_week"
-      },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": [
-        "browse",
-        "compare",
-        "request_availability",
-        "view_status"
-      ]
-    },
-    {
-      "id": "30-day-nomad-stay",
-      "kind": "stay",
-      "category": "nomad-stays",
-      "name": "30-Day Nomad Stay",
-      "tagline": "Stay a month. Build without limits.",
-      "pricing": {
-        "amount": 19999,
-        "currency": "PHP",
-        "model": "per_stay"
-      },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": [
-        "browse",
-        "compare",
-        "request_availability",
-        "view_status"
-      ]
-    },
-    {
-      "id": "founder-residency",
-      "kind": "stay",
-      "category": "nomad-stays",
-      "name": "Founder Residency",
-      "tagline": "Designed for founders staying 1-3 months+.",
-      "pricing": {
-        "amount": 49999,
-        "currency": "PHP",
-        "model": "per_month"
-      },
-      "agentReadable": true,
-      "humanApprovalRequired": true,
-      "actions": [
-        "browse",
-        "compare",
-        "request_availability",
-        "view_status"
       ]
     },
     {

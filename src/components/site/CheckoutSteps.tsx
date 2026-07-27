@@ -11,7 +11,7 @@ interface Props {
 
 /**
  * `progress`  — the numbered checkout tracker (Select → … → Mission Created).
- * `process`   — the icon-led "how it works" rail used on Operators/Stays.
+ * `process`   — the icon-led "how it works" rail used on Operators.
  */
 export function CheckoutSteps({ steps, activeIndex, variant = "process" }: Props) {
   if (variant === "progress") {

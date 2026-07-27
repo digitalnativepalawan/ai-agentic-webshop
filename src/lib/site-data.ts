@@ -5,7 +5,6 @@ import type {
   Partnership,
   ProcessStep,
   Stat,
-  Stay,
   TrustPoint,
 } from "./types";
 
@@ -16,7 +15,7 @@ export const BRAND = {
   name: "merQato.digital",
   tagline: "Built in Palawan. Designed for the world.",
   mission:
-    "The marketplace where people and AI agents safely discover, compare, and request AI Operators, Palawan stays, and digital infrastructure.",
+    "The marketplace where people and AI agents safely discover, compare, and request AI Operators, and digital infrastructure.",
   location: "San Vicente, Palawan, Philippines",
   contactEmail: "hello@merqato.digital",
 };
@@ -24,7 +23,6 @@ export const BRAND = {
 export const NAV = [
   { label: "Home", to: "/" },
   { label: "AI Operators", to: "/agents" },
-  { label: "Stays", to: "/stays" },
   { label: "Ecosystem", to: "/ecosystem" },
   { label: "Resort Agents", to: "/resort-agents" },
   { label: "Mission Control", to: "/mission-control" },
@@ -212,100 +210,6 @@ export const FEATURED_OPERATOR_IDS = [
 
 
 /* ------------------------------------------------------------------ *
- * Nomad Stays
- * ------------------------------------------------------------------ */
-export const STAYS: Stay[] = [
-  {
-    id: "workspace-day-pass",
-    kind: "stay",
-    name: "Workspace Day Pass",
-    icon: "Laptop",
-    tagline: "Focus for the day. Work, connect, ship.",
-    price: { amount: 999, currency: "PHP", model: "per_day", suffix: "/ day" },
-    humanConfirmationRequired: true,
-    features: [
-      "Dedicated workspace",
-      "High-speed Wi-Fi / Starlink",
-      "Kitchen access",
-      "Laundry access",
-      "Local support during opening hours",
-      "WhatsApp confirmation",
-    ],
-  },
-  {
-    id: "weekly-sprint",
-    kind: "stay",
-    name: "Weekly Sprint",
-    icon: "CalendarDays",
-    tagline: "One week to focus and make progress.",
-    price: { amount: 4999, currency: "PHP", model: "per_week", suffix: "/ week" },
-    humanConfirmationRequired: true,
-    features: [
-      "Dedicated workspace",
-      "High-speed Wi-Fi / Starlink",
-      "Kitchen access",
-      "Private or shared room",
-      "Laundry access",
-      "Local support",
-      "WhatsApp confirmation",
-    ],
-  },
-  {
-    id: "30-day-nomad-stay",
-    kind: "stay",
-    name: "30-Day Nomad Stay",
-    icon: "CalendarRange",
-    tagline: "Stay a month. Build without limits.",
-    price: { amount: 19999, currency: "PHP", model: "per_stay", suffix: "/ 30 days" },
-    mostPopular: true,
-    humanConfirmationRequired: true,
-    features: [
-      "Dedicated workspace",
-      "High-speed Wi-Fi / Starlink",
-      "Kitchen access",
-      "Private room",
-      "Laundry access (2x / week)",
-      "Local support & community",
-      "WhatsApp confirmation",
-    ],
-  },
-  {
-    id: "founder-residency",
-    kind: "stay",
-    name: "Founder Residency",
-    icon: "Crown",
-    tagline: "Designed for founders staying 1–3 months+.",
-    price: { amount: 49999, currency: "PHP", model: "per_month", suffix: "/ month" },
-    humanConfirmationRequired: true,
-    features: [
-      "Premium workspace",
-      "High-speed Wi-Fi / Starlink",
-      "Fully equipped kitchen",
-      "Private room (upgraded)",
-      "Laundry access (unlimited)",
-      "Priority local support",
-      "WhatsApp concierge",
-      "Mission Control check-ins",
-    ],
-  },
-];
-
-export const STAY_STEPS: ProcessStep[] = [
-  { index: 1, title: "Choose dates", body: "Select your preferred check-in and check-out.", icon: "Calendar" },
-  { index: 2, title: "Request availability", body: "We check in real time and review manually.", icon: "Search" },
-  { index: 3, title: "Human confirmation", body: "Our team confirms availability, notes, and best options.", icon: "UserCheck" },
-  { index: 4, title: "Pay deposit", body: "Secure your stay with a deposit via secure link.", icon: "CreditCard" },
-  { index: 5, title: "Stay confirmed", body: "You'll receive confirmation and arrival details.", icon: "CheckCircle2" },
-];
-
-export const STAY_PERKS: TrustPoint[] = [
-  { icon: "Wifi", title: "Reliable Internet", body: "High-speed Wi-Fi and Starlink backup for uninterrupted work." },
-  { icon: "VolumeX", title: "Quiet & Focused", body: "Peaceful environments designed for deep focus and productivity." },
-  { icon: "Users", title: "Local Support", body: "On-the-ground team ready to help via WhatsApp." },
-  { icon: "BedDouble", title: "Long-Stay Comfort", body: "Thoughtful spaces, good food, and everything you need." },
-];
-
-/* ------------------------------------------------------------------ *
  * Ecosystem partnerships
  * ------------------------------------------------------------------ */
 export const PARTNERSHIPS: Partnership[] = [
@@ -428,13 +332,6 @@ export const WHAT_YOU_CAN_DO = [
     body: "Hire specialized AI operators that work 24/7 to handle tasks, delight guests, and grow your business.",
     to: "/agents",
     cta: "Explore AI Operators",
-  },
-  {
-    icon: "Home",
-    title: "Nomad Stays",
-    body: "Book beautiful, work-ready stays across Palawan — perfect for digital nomads and remote teams.",
-    to: "/stays",
-    cta: "Find a Stay",
   },
   {
     icon: "Handshake",
