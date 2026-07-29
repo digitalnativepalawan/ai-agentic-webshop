@@ -9,24 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as StaysRouteImport } from './routes/stays'
-import { Route as MissionControlRouteImport } from './routes/mission-control'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as TalaResearchRouteImport } from './routes/tala-research'
+import { Route as ResortAgentsRouteImport } from './routes/resort-agents'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AgentsRouteImport } from './routes/agents'
+import { Route as AgentPolicyRouteImport } from './routes/agent-policy'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminOperatorsRouteImport } from './routes/admin.operators'
 
-const StaysRoute = StaysRouteImport.update({
-  id: '/stays',
-  path: '/stays',
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MissionControlRoute = MissionControlRouteImport.update({
-  id: '/mission-control',
-  path: '/mission-control',
+const TalaResearchRoute = TalaResearchRouteImport.update({
+  id: '/tala-research',
+  path: '/tala-research',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResortAgentsRoute = ResortAgentsRouteImport.update({
+  id: '/resort-agents',
+  path: '/resort-agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EcosystemRoute = EcosystemRouteImport.update({
@@ -49,6 +62,11 @@ const AgentsRoute = AgentsRouteImport.update({
   path: '/agents',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentPolicyRoute = AgentPolicyRouteImport.update({
+  id: '/agent-policy',
+  path: '/agent-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -67,35 +85,44 @@ const AdminOperatorsRoute = AdminOperatorsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agent-policy': typeof AgentPolicyRoute
   '/agents': typeof AgentsRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
-  '/mission-control': typeof MissionControlRoute
-  '/stays': typeof StaysRoute
+  '/privacy': typeof PrivacyRoute
+  '/resort-agents': typeof ResortAgentsRoute
+  '/tala-research': typeof TalaResearchRoute
+  '/terms': typeof TermsRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agent-policy': typeof AgentPolicyRoute
   '/agents': typeof AgentsRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
-  '/mission-control': typeof MissionControlRoute
-  '/stays': typeof StaysRoute
+  '/privacy': typeof PrivacyRoute
+  '/resort-agents': typeof ResortAgentsRoute
+  '/tala-research': typeof TalaResearchRoute
+  '/terms': typeof TermsRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agent-policy': typeof AgentPolicyRoute
   '/agents': typeof AgentsRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
-  '/mission-control': typeof MissionControlRoute
-  '/stays': typeof StaysRoute
+  '/privacy': typeof PrivacyRoute
+  '/resort-agents': typeof ResortAgentsRoute
+  '/tala-research': typeof TalaResearchRoute
+  '/terms': typeof TermsRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
 }
@@ -103,64 +130,90 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/agent-policy'
     | '/agents'
     | '/checkout'
     | '/contact'
     | '/ecosystem'
-    | '/mission-control'
-    | '/stays'
+    | '/privacy'
+    | '/resort-agents'
+    | '/tala-research'
+    | '/terms'
     | '/admin/operators'
     | '/admin/orders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/agent-policy'
     | '/agents'
     | '/checkout'
     | '/contact'
     | '/ecosystem'
-    | '/mission-control'
-    | '/stays'
+    | '/privacy'
+    | '/resort-agents'
+    | '/tala-research'
+    | '/terms'
     | '/admin/operators'
     | '/admin/orders'
   id:
     | '__root__'
     | '/'
+    | '/agent-policy'
     | '/agents'
     | '/checkout'
     | '/contact'
     | '/ecosystem'
-    | '/mission-control'
-    | '/stays'
+    | '/privacy'
+    | '/resort-agents'
+    | '/tala-research'
+    | '/terms'
     | '/admin/operators'
     | '/admin/orders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgentPolicyRoute: typeof AgentPolicyRoute
   AgentsRoute: typeof AgentsRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   EcosystemRoute: typeof EcosystemRoute
-  MissionControlRoute: typeof MissionControlRoute
-  StaysRoute: typeof StaysRoute
+  PrivacyRoute: typeof PrivacyRoute
+  ResortAgentsRoute: typeof ResortAgentsRoute
+  TalaResearchRoute: typeof TalaResearchRoute
+  TermsRoute: typeof TermsRoute
   AdminOperatorsRoute: typeof AdminOperatorsRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/stays': {
-      id: '/stays'
-      path: '/stays'
-      fullPath: '/stays'
-      preLoaderRoute: typeof StaysRouteImport
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mission-control': {
-      id: '/mission-control'
-      path: '/mission-control'
-      fullPath: '/mission-control'
-      preLoaderRoute: typeof MissionControlRouteImport
+    '/tala-research': {
+      id: '/tala-research'
+      path: '/tala-research'
+      fullPath: '/tala-research'
+      preLoaderRoute: typeof TalaResearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resort-agents': {
+      id: '/resort-agents'
+      path: '/resort-agents'
+      fullPath: '/resort-agents'
+      preLoaderRoute: typeof ResortAgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ecosystem': {
@@ -191,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agent-policy': {
+      id: '/agent-policy'
+      path: '/agent-policy'
+      fullPath: '/agent-policy'
+      preLoaderRoute: typeof AgentPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -217,12 +277,15 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgentPolicyRoute: AgentPolicyRoute,
   AgentsRoute: AgentsRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   EcosystemRoute: EcosystemRoute,
-  MissionControlRoute: MissionControlRoute,
-  StaysRoute: StaysRoute,
+  PrivacyRoute: PrivacyRoute,
+  ResortAgentsRoute: ResortAgentsRoute,
+  TalaResearchRoute: TalaResearchRoute,
+  TermsRoute: TermsRoute,
   AdminOperatorsRoute: AdminOperatorsRoute,
   AdminOrdersRoute: AdminOrdersRoute,
 }
