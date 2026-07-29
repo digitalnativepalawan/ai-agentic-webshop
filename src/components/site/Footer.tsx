@@ -107,10 +107,10 @@ export function Footer() {
             © {new Date().getFullYear()} merQato.digital · All rights reserved.
           </p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-faint">
-            <a href="#" className="hover:text-gold">Terms of Service</a>
-            <a href="#" className="hover:text-gold">Privacy Policy</a>
-            <a href="#" className="hover:text-gold">Agent Policy</a>
-            <StatusChip tone="gold" icon={<span className="font-mono text-[10px]">{"</>"}</span>}>
+            <Link to="/terms" className="hover:text-gold">Terms of Service</Link>
+            <Link to="/privacy" className="hover:text-gold">Privacy Policy</Link>
+            <Link to="/agent-policy" className="hover:text-gold">Agent Policy</Link>
+            <StatusChip tone="gold" icon={<span className="font-mono text-[10px]">{">"}</span>}>
               AI-READABLE
             </StatusChip>
           </div>
