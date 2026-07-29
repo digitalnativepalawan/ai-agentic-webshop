@@ -1,5 +1,5 @@
 @import "tailwindcss" source(none);
-@import "../src";
+@source "../src";
 @import "tw-animate-css";
 @import "@fontsource/cormorant-garamond/400.css";
 @import "@fontsource/cormorant-garamond/500.css";
