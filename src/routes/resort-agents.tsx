@@ -51,24 +51,7 @@ const RESORT_AGENTS = [
     highlights: ["Live availability + rates", "Confirmed bookings, not just chats", "PayMongo / GCash checkout"],
     tone: "outline" as const,
   },
-  {
-    id: "resort-growth",
-    name: "Growth Agent",
-    icon: "Megaphone",
-    tagline:
-      "Fills empty rooms year-round. Rainy season → Starlink-led digital-nomad packages. Peak season → experience & F&B content. Multilingual, draft-first.",
-    highlights: ["Season-aware content", "Nomad lead-gen (Starlink-led)", "English / Tagalog / 中文 drafts"],
-    tone: "gold" as const,
-  },
-  {
-    id: "prompt-engineer",
-    name: "Prompt Engineer",
-    icon: "Sparkles",
-    tagline:
-      "Turns rough ideas into production-grade prompt contracts for landing pages, web apps, and agent workflows — with QA, tests, and version control.",
-    highlights: ["Requirements analysis", "Design QA + test cases", "Versioned prompt library"],
-    tone: "outline" as const,
-  },
+
 ];
 
 function ResortAgents() {

@@ -6,7 +6,9 @@
   "humanApprovalRequired": true,
   "categories": [
     "ai-operators",
-    "ecosystem-partnerships"
+    "nomad-stays",
+    "ecosystem-partnerships",
+    "mission-control"
   ],
   "offers": [
     {
@@ -14,7 +16,7 @@
       "kind": "operator",
       "category": "hospitality",
       "name": "KAPWA — Full",
-      "tagline": "The complete AI back office for resorts: guest service, bookings, lead gen, social, reviews, menu & ordering, revenue follow-up — with human approval.",
+      "tagline": "The complete AI back office for resorts: guest service, bookings, lead gen, social, reviews, menu & ordering, revenue follow-up, and Mission Control — with human approval.",
       "pricing": {
         "amount": 7999,
         "currency": "PHP",
@@ -36,40 +38,88 @@
         "social-media",
         "review-manager",
         "menu-ordering",
-        "revenue-followup"
+        "revenue-followup",
+        "mission-control"
       ]
     },
     {
-      "id": "prompt-engineer",
-      "kind": "operator",
-      "category": "marketing",
-      "name": "Prompt Engineer",
-      "tagline": "Turns rough ideas into production-grade prompt contracts for landing pages, web apps, and agent workflows — with requirements analysis, design QA, test cases, and version control.",
+      "id": "workspace-day-pass",
+      "kind": "stay",
+      "category": "nomad-stays",
+      "name": "Workspace Day Pass",
+      "tagline": "Focus for the day. Work, connect, ship.",
       "pricing": {
-        "amount": 0,
+        "amount": 999,
         "currency": "PHP",
-        "model": "custom_quote"
+        "model": "per_day"
       },
       "agentReadable": true,
       "humanApprovalRequired": true,
       "actions": [
         "browse",
         "compare",
-        "prepare_checkout",
-        "request_quote",
+        "request_availability",
         "view_status"
-      ],
-      "capabilities": [
-        "requirements-analysis",
-        "prompt-contract-authoring",
-        "landing-page-prompts",
-        "web-app-prompts",
-        "agent-workflow-prompts",
-        "prompt-critique-and-repair",
-        "test-case-generation",
-        "model-configuration",
-        "version-control",
-        "human-approval-review"
+      ]
+    },
+    {
+      "id": "weekly-sprint",
+      "kind": "stay",
+      "category": "nomad-stays",
+      "name": "Weekly Sprint",
+      "tagline": "One week to focus and make progress.",
+      "pricing": {
+        "amount": 4999,
+        "currency": "PHP",
+        "model": "per_week"
+      },
+      "agentReadable": true,
+      "humanApprovalRequired": true,
+      "actions": [
+        "browse",
+        "compare",
+        "request_availability",
+        "view_status"
+      ]
+    },
+    {
+      "id": "30-day-nomad-stay",
+      "kind": "stay",
+      "category": "nomad-stays",
+      "name": "30-Day Nomad Stay",
+      "tagline": "Stay a month. Build without limits.",
+      "pricing": {
+        "amount": 19999,
+        "currency": "PHP",
+        "model": "per_stay"
+      },
+      "agentReadable": true,
+      "humanApprovalRequired": true,
+      "actions": [
+        "browse",
+        "compare",
+        "request_availability",
+        "view_status"
+      ]
+    },
+    {
+      "id": "founder-residency",
+      "kind": "stay",
+      "category": "nomad-stays",
+      "name": "Founder Residency",
+      "tagline": "Designed for founders staying 1-3 months+.",
+      "pricing": {
+        "amount": 49999,
+        "currency": "PHP",
+        "model": "per_month"
+      },
+      "agentReadable": true,
+      "humanApprovalRequired": true,
+      "actions": [
+        "browse",
+        "compare",
+        "request_availability",
+        "view_status"
       ]
     },
     {

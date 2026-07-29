@@ -9,7 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ResortAgentsRouteImport } from './routes/resort-agents'
+import { Route as StaysRouteImport } from './routes/stays'
+import { Route as MissionControlRouteImport } from './routes/mission-control'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -18,9 +19,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminOperatorsRouteImport } from './routes/admin.operators'
 
-const ResortAgentsRoute = ResortAgentsRouteImport.update({
-  id: '/resort-agents',
-  path: '/resort-agents',
+const StaysRoute = StaysRouteImport.update({
+  id: '/stays',
+  path: '/stays',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MissionControlRoute = MissionControlRouteImport.update({
+  id: '/mission-control',
+  path: '/mission-control',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EcosystemRoute = EcosystemRouteImport.update({
@@ -65,7 +71,8 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
-  '/resort-agents': typeof ResortAgentsRoute
+  '/mission-control': typeof MissionControlRoute
+  '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
 }
@@ -75,7 +82,8 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
-  '/resort-agents': typeof ResortAgentsRoute
+  '/mission-control': typeof MissionControlRoute
+  '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
 }
@@ -86,7 +94,8 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/ecosystem': typeof EcosystemRoute
-  '/resort-agents': typeof ResortAgentsRoute
+  '/mission-control': typeof MissionControlRoute
+  '/stays': typeof StaysRoute
   '/admin/operators': typeof AdminOperatorsRoute
   '/admin/orders': typeof AdminOrdersRoute
 }
@@ -98,7 +107,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/ecosystem'
-    | '/resort-agents'
+    | '/mission-control'
+    | '/stays'
     | '/admin/operators'
     | '/admin/orders'
   fileRoutesByTo: FileRoutesByTo
@@ -108,7 +118,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/ecosystem'
-    | '/resort-agents'
+    | '/mission-control'
+    | '/stays'
     | '/admin/operators'
     | '/admin/orders'
   id:
@@ -118,7 +129,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/ecosystem'
-    | '/resort-agents'
+    | '/mission-control'
+    | '/stays'
     | '/admin/operators'
     | '/admin/orders'
   fileRoutesById: FileRoutesById
@@ -129,18 +141,26 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   EcosystemRoute: typeof EcosystemRoute
-  ResortAgentsRoute: typeof ResortAgentsRoute
+  MissionControlRoute: typeof MissionControlRoute
+  StaysRoute: typeof StaysRoute
   AdminOperatorsRoute: typeof AdminOperatorsRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/resort-agents': {
-      id: '/resort-agents'
-      path: '/resort-agents'
-      fullPath: '/resort-agents'
-      preLoaderRoute: typeof ResortAgentsRouteImport
+    '/stays': {
+      id: '/stays'
+      path: '/stays'
+      fullPath: '/stays'
+      preLoaderRoute: typeof StaysRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mission-control': {
+      id: '/mission-control'
+      path: '/mission-control'
+      fullPath: '/mission-control'
+      preLoaderRoute: typeof MissionControlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ecosystem': {
@@ -201,7 +221,8 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   EcosystemRoute: EcosystemRoute,
-  ResortAgentsRoute: ResortAgentsRoute,
+  MissionControlRoute: MissionControlRoute,
+  StaysRoute: StaysRoute,
   AdminOperatorsRoute: AdminOperatorsRoute,
   AdminOrdersRoute: AdminOrdersRoute,
 }
