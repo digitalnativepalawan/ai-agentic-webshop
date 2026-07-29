@@ -106,7 +106,7 @@ export function Footer() {
           <p className="text-[12px] text-faint">
             © {new Date().getFullYear()} merQato.digital · All rights reserved.
           </p>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-faint">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-x-5 gap-y-2 text-[12px] text-faint">
             <Link to="/terms" className="hover:text-gold">Terms of Service</Link>
             <Link to="/privacy" className="hover:text-gold">Privacy Policy</Link>
             <Link to="/agent-policy" className="hover:text-gold">Agent Policy</Link>

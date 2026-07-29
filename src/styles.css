@@ -1,13 +1,12 @@
 @import "tailwindcss" source(none);
-@source "../src";
+@import "../src";
 @import "tw-animate-css";
 @import "@fontsource/cormorant-garamond/400.css";
 @import "@fontsource/cormorant-garamond/500.css";
 @import "@fontsource/cormorant-garamond/600.css";
-@import "@fontsource/jost/300.css";
-@import "@fontsource/jost/400.css";
-@import "@fontsource/jost/500.css";
-@import "@fontsource/jost/600.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 
@@ -15,7 +14,7 @@
 
 @theme inline {
   --font-display: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "Jost", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --tracking-label: 0.22em;
@@ -128,8 +127,8 @@ body {
   margin: 0;
   background-color: rgb(var(--bg));
   color: rgb(var(--ink));
-  font-family: "Jost", system-ui, sans-serif;
-  font-weight: 300;
+  font-family: "Inter", "Google Sans", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   transition: background-color 0.4s ease, color 0.4s ease;
