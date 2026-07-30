@@ -53,7 +53,7 @@ export async function generate({ system, user, maxTokens = 800, onToken, model }
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: *** ${cfg.openrouterKey.trim()}`,
+        Authorization: `Bearer ${cfg.openrouterKey.trim()}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "https://merqato.digital",
         "X-Title": "Merqato Agent",
