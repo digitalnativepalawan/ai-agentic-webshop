@@ -9,6 +9,7 @@ export interface StreamOpts {
   user: string;
   maxTokens?: number;
   onToken: (text: string) => void;
+  model?: string; // Optional override for the default model from config
 }
 
 async function readSSE(
@@ -46,19 +47,19 @@ async function readSSE(
   return out;
 }
 
-export async function generate({ system, user, maxTokens = 800, onToken }: StreamOpts): Promise<string> {
+export async function generate({ system, user, maxTokens = 800, onToken, model }: StreamOpts): Promise<string> {
   const cfg = getAgentConfig();
   if (cfg.mode === "openrouter" && cfg.openrouterKey.trim()) {
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${cfg.openrouterKey.trim()}`,
+        Authorization: *** ${cfg.openrouterKey.trim()}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "https://merqato.digital",
         "X-Title": "Merqato Agent",
       },
       body: JSON.stringify({
-        model: cfg.model || "google/gemini-2.0-flash-exp:free",
+        model: model || cfg.model || "google/gemini-2.0-flash-exp:free",
         stream: true,
         max_tokens: maxTokens,
         messages: [
@@ -79,7 +80,7 @@ export async function generate({ system, user, maxTokens = 800, onToken }: Strea
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: cfg.model.trim(),
+        model: model || cfg.model.trim(),
         stream: true,
         messages: [
           { role: "system", content: system },
