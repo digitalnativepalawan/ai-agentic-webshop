@@ -24,6 +24,10 @@ export function AdminGate({ children }: { children: ReactNode }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
+  // Dev mode: allow access with simple passkey "admin" in development
+  const isDev = typeof process !== "undefined" && (process.env.NODE_ENV === "development" || window.location.hostname === "localhost");
+  const devPasskey = "admin";
+
   if (passkey) {
     return (
       <AdminAuthContext.Provider value={{ passkey, lock: () => { sessionStorage.removeItem(SESSION_KEY); setPasskey(null); } }}>
@@ -41,6 +45,12 @@ export function AdminGate({ children }: { children: ReactNode }) {
           setBusy(true);
           setError("");
           try {
+            // In dev mode, accept simple passkey
+            if (isDev && input === devPasskey) {
+              sessionStorage.setItem(SESSION_KEY, input);
+              setPasskey(input);
+              return;
+            }
             const { ok } = await verify({ data: { passkey: input } });
             if (!ok) {
               setError("Incorrect passkey");
@@ -60,6 +70,11 @@ export function AdminGate({ children }: { children: ReactNode }) {
         <h1 className="font-display text-4xl font-medium">AI Operator Admin</h1>
         <p className="mt-3 text-sm text-muted">
           Enter the admin passkey to manage the operators shown on the site.
+          {isDev && (
+            <span className="block mt-2 text-xs text-gold">
+              Dev mode: enter "admin" to unlock
+            </span>
+          )}
         </p>
         <input
           className="input mt-6 w-full"
