@@ -1,95 +1,55 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { TopNav, MobileTabBar } from "@/components/likha/nav";
+import { Hero } from "@/components/likha/hero";
+import { Rail } from "@/components/likha/rail";
+import { CollectionBanner } from "@/components/likha/collection-banner";
+import { FilmDetail } from "@/components/likha/film-detail";
+import { Footer } from "@/components/likha/footer";
+import { awardWinners, classics, continueWatching, curatedCollection, luzon, newReleases, popular, shortsAndDocs, } from "@/data/films";
+import type { Film } from "@/data/films";
+import { cinemalaya2026FullLength, cinemalaya2026Shorts } from "@/data/films-cinemalaya-2026";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Merqato — Agentic Commerce for Hospitality" },
-      { name: "description", content: "AI operators and Palawan-native ecosystem — booked by agents, approved by humans." },
-      { property: "og:title", content: "Merqato — Agentic Commerce for Hospitality" },
-      { property: "og:description", content: "AI operators and Palawan-native ecosystem — booked by agents, approved by humans." },
+      { title: "Likha Flix — Stream Filipino Independent Cinema" },
+      { name: "description", content: "Rent Filipino independent films in HD from ₱49. Festival winners, regional voices from Luzon, Visayas and Mindanao, documentaries, shorts and restored classics." },
+      { property: "og:title", content: "Likha Flix — Stream Filipino Independent Cinema" },
+      { property: "og:description", content: "Festival winners, regional voices, documentaries and shorts. 7-day access · 1080p · EN & FIL subtitles." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "" }],
   }),
   component: Home,
 });
 
-import { Link } from "@tanstack/react-router";
-import { ArrowRight, Bot, Palmtree } from "lucide-react";
-import { BUY_WITH_CONFIDENCE, HERO_BADGES, WHAT_YOU_CAN_DO } from "@/lib/site-data";
-import { useOperatorCatalog } from "@/context/OperatorCatalogContext";
-import { Section, Eyebrow, HeroBackdrop } from "@/components/site/Section";
-import { StatusChip } from "@/components/site/StatusChip";
-import { CTAButton } from "@/components/site/CTAButton";
-import { OfferCard } from "@/components/site/OfferCard";
-import { OperatorCard } from "@/components/site/OperatorCard";
-import { TrustBlock } from "@/components/site/TrustBlock";
-import { Icon } from "@/components/site/Icon";
-
 function Home() {
-  const { visibleOperators } = useOperatorCatalog();
-  const featured = visibleOperators.filter((operator) => operator.featured).slice(0, 4);
+  const [selected, setSelected] = useState<Film | null>(null);
+  const open = (film: Film) => setSelected(film);
 
   return (
-    <>
-      <div className="relative">
-        <HeroBackdrop />
-        <div className="shell pb-6 pt-10 sm:pt-14">
-          <div className="mb-8 flex flex-wrap gap-2.5">
-            {HERO_BADGES.map((badge) => (
-              <StatusChip key={badge.label} tone="outline" icon={<Icon name={badge.icon} size={13} className="text-gold" />}>
-                {badge.label}
-              </StatusChip>
-            ))}
-          </div>
-
-          <h1 className="max-w-4xl font-display text-[clamp(2.6rem,7vw,5.2rem)] font-medium leading-[0.98] tracking-tight animate-fade-up">
-            Built for <span className="text-gold">people.</span><br />
-            Structured for <span className="text-crimson">agents.</span>
-          </h1>
-
-          <p className="mt-6 font-display text-[clamp(1.3rem,3vw,1.9rem)] text-ink/90">The marketplace where AI agents can safely shop.</p>
-          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted">
-            merQato.digital helps people and AI agents discover, compare, and request AI Operators and digital infrastructure — with human approval at every step.
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            <CTAButton to="/agents" variant="primary">Browse AI Operators</CTAButton>
-            <CTAButton to="/contact" variant="ghost">Talk to Us</CTAButton>
-          </div>
-
-          {/* Dual entry points: human browse + agent/manifest path (skill Rule 2) */}
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[12.5px]">
-            <span className="inline-flex items-center gap-1.5 text-faint">
-              <Bot size={14} className="text-gold" /> For AI agents:
-            </span>
-            <a href="/merqato-catalog.json" className="focus-ring inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-gold hover:text-gold-soft">Browse as an agent →</a>
-            <span className="text-faint">·</span>
-            <a href="/agent-commerce.json" className="focus-ring inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-gold hover:text-gold-soft">View API manifest →</a>
-          </div>
-
-          <div className="mt-10 flex items-center gap-3">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gold/25 text-gold"><Palmtree size={16} /></span>
-            <div><p className="eyebrow !mb-0">Built in Palawan</p><p className="text-[13px] text-muted">Local team. Local partners. Global mindset.</p></div>
-          </div>
-        </div>
-      </div>
-
-      <Section>
-        <Eyebrow>What you can do here</Eyebrow>
-        <div className="grid gap-5 md:grid-cols-3">{WHAT_YOU_CAN_DO.map((item) => <OfferCard key={item.title} {...item} />)}</div>
-      </Section>
-
-      <Section className="!pt-2">
-        <div className="mb-6 flex items-center justify-between">
-          <Eyebrow>Featured AI Operators</Eyebrow>
-          <Link to="/agents" className="focus-ring -mt-4 inline-flex items-center gap-1.5 text-[13px] text-gold hover:text-gold-soft">View all operators <ArrowRight size={14} /></Link>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{featured.map((operator) => <OperatorCard key={operator.id} operator={operator} compact />)}</div>
-      </Section>
-
-      <Section className="!pt-2">
-        <Eyebrow>Buy with confidence</Eyebrow>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">{BUY_WITH_CONFIDENCE.map((point) => <TrustBlock key={point.title} point={point} />)}</div>
-      </Section>
-    </>
+    <div className="min-h-screen bg-background pb-20 lg:pb-0">
+      <TopNav />
+      <main>
+        <Hero onOpen={open} />
+        <Rail title="Cinemalaya 2026 Official Selection" subtitle="Real festival finalists, straight from cinemalaya.org" films={cinemalaya2026FullLength} onOpen={open} />
+        <Rail title="Cinemalaya 2026 Shorts" subtitle="Shorts A & B — real festival finalists" films={cinemalaya2026Shorts} onOpen={open} />
+        <Rail title="Continue Watching" films={continueWatching} onOpen={open} />
+        <Rail title="Popular in the Philippines" subtitle="What the country is renting this week" films={popular} onOpen={open} />
+        <Rail title="New Releases" subtitle="Premieres and fresh festival runs" films={newReleases} onOpen={open} />
+        <Rail title="From Luzon, Visayas & Mindanao" subtitle="Regional cinema in its own languages" films={luzon} onOpen={open} />
+        <CollectionBanner />
+        <Rail title="Curated Collection" subtitle="The Provincial New Wave — twelve films" films={curatedCollection} variant="portrait" onOpen={open} />
+        <Rail title="Award Winners" subtitle="Cinemalaya, QCinema, Gawad Urian and beyond" films={awardWinners} variant="portrait" onOpen={open} />
+        <Rail title="Shorts & Documentaries" subtitle="Free to ₱29" films={shortsAndDocs} onOpen={open} />
+        <Rail title="Filipino Classics" subtitle="Restored and remastered" films={classics} onOpen={open} />
+      </main>
+      <Footer />
+      <MobileTabBar />
+      <FilmDetail film={selected} onClose={() => setSelected(null)} />
+    </div>
   );
 }
