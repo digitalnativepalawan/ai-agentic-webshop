@@ -174,6 +174,12 @@ export function PostComposer({
   }
 
   function toggleIntegration(id: string) {
+    const integration = integrations.find((item) => item.id === id);
+    const selected = selectedIds.includes(id);
+    setError("");
+    setMessage(
+      `${integration?.name || "Account"} ${selected ? "removed from" : "selected for"} this post.`,
+    );
     setSelectedIds((current) =>
       current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
     );
@@ -188,6 +194,9 @@ export function PostComposer({
       )
       .map((item) => item.id);
     const selected = ids.some((id) => selectedIds.includes(id));
+    const label = platform === "facebook" ? "Facebook" : "Instagram";
+    setError("");
+    setMessage(`${label} ${selected ? "removed from" : "selected for"} this post.`);
     setSelectedIds((current) =>
       selected
         ? current.filter((id) => !ids.includes(id))
@@ -564,17 +573,28 @@ export function PostComposer({
           <div className={labelClass}>
             Selected channels
             <div className="flex gap-2">
-              {(["facebook", "instagram"] as const).map((platform) => (
-                <button
-                  key={platform}
-                  type="button"
-                  aria-pressed={selectedChannels.includes(platform)}
-                  onClick={() => togglePlatform(platform)}
-                  className={`focus-ring rounded-md border px-3 py-2 text-xs capitalize ${selectedChannels.includes(platform) ? "border-gold bg-gold/10 text-gold" : "border-line/25 text-muted"}`}
-                >
-                  {platform}
-                </button>
-              ))}
+              {(["facebook", "instagram"] as const).map((platform) => {
+                const selected = selectedChannels.includes(platform);
+                return (
+                  <button
+                    key={platform}
+                    type="button"
+                    aria-label={platform}
+                    aria-pressed={selected}
+                    title={`${platform} is ${selected ? "selected" : "not selected"}`}
+                    onClick={() => togglePlatform(platform)}
+                    className={`focus-ring inline-flex items-center gap-2 rounded-md border px-3 py-2 text-xs capitalize ${selected ? "border-gold bg-gold/10 text-gold" : "border-line/25 text-muted"}`}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`flex h-4 w-4 items-center justify-center rounded-full border text-[10px] ${selected ? "border-gold bg-gold text-[#0b0b0b]" : "border-line/40"}`}
+                    >
+                      {selected ? "✓" : ""}
+                    </span>
+                    {platform}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -659,7 +679,15 @@ export function PostComposer({
             <p className="eyebrow">Channels</p>
             <h2 className="font-display text-2xl">Connected Postiz accounts</h2>
           </div>
-          <button type="button" onClick={() => setSelectedIds([])} className="text-xs text-muted">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedIds([]);
+              setError("");
+              setMessage("All channels cleared. Select Facebook, Instagram, or both.");
+            }}
+            className="text-xs text-muted"
+          >
             Clear all
           </button>
         </div>
