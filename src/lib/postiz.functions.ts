@@ -13,14 +13,46 @@ export const testPostizConnection = createServerFn({ method: "POST" })
     const api = await import("./postiz.server");
     api.requireAdminPasskey(data.passkey);
     const configuration = api.getPostizConfigurationStatus();
-    await api.testPostizApiConnection();
-    const integrations = await api.listPostizIntegrations();
-    return {
-      connected: true as const,
-      checkedAt: new Date().toISOString(),
-      integrationCount: integrations.length,
-      ...configuration,
-    };
+    try {
+      await api.testPostizApiConnection();
+      const integrations = await api.listPostizIntegrations();
+      const active = integrations.filter((integration) => !integration.disabled);
+      return {
+        connected: true as const,
+        authenticated: true as const,
+        checkedAt: new Date().toISOString(),
+        failedAt: null,
+        endpoint: `${process.env.POSTIZ_API_URL?.replace(/\/+$/, "")}/api/public/v1`,
+        integrationCount: active.length,
+        facebookConnected: active.some((integration) => integration.identifier === "facebook"),
+        instagramConnected: active.some((integration) =>
+          integration.identifier.startsWith("instagram"),
+        ),
+        error: null,
+        ...configuration,
+      };
+    } catch (error) {
+      const postizError = error instanceof api.PostizApiError ? error : null;
+      return {
+        connected: false as const,
+        authenticated: false as const,
+        checkedAt: null,
+        failedAt: new Date().toISOString(),
+        endpoint: postizError?.endpoint ?? process.env.POSTIZ_API_URL ?? "Not configured",
+        integrationCount: 0,
+        facebookConnected: false,
+        instagramConnected: false,
+        error: {
+          status: postizError?.status ?? null,
+          message: error instanceof Error ? error.message : "Postiz connection failed.",
+          likelyCause:
+            postizError?.status === 401
+              ? "The configured Postiz API key was rejected."
+              : "Check that Postiz is running and POSTIZ_API_URL is reachable from the app server.",
+        },
+        ...configuration,
+      };
+    }
   });
 
 export const getPostizConfiguration = createServerFn({ method: "POST" })

@@ -15,9 +15,19 @@ export interface AgentConfig {
   mode: AgentMode | null;
   openrouterKey: string;
   model: string;
+  ollamaBaseUrl: string;
+  generationTimeoutMs: number;
+  lastSuccessfulHealthCheck: string | null;
 }
 
-const EMPTY: AgentConfig = { mode: null, openrouterKey: "", model: "" };
+const EMPTY: AgentConfig = {
+  mode: null,
+  openrouterKey: "",
+  model: "",
+  ollamaBaseUrl: "http://localhost:11434",
+  generationTimeoutMs: 90_000,
+  lastSuccessfulHealthCheck: null,
+};
 
 export function getAgentConfig(): AgentConfig {
   try {
@@ -28,6 +38,9 @@ export function getAgentConfig(): AgentConfig {
       mode: parsed.mode ?? null,
       openrouterKey: parsed.openrouterKey ?? "",
       model: parsed.model ?? "",
+      ollamaBaseUrl: parsed.ollamaBaseUrl ?? EMPTY.ollamaBaseUrl,
+      generationTimeoutMs: parsed.generationTimeoutMs ?? EMPTY.generationTimeoutMs,
+      lastSuccessfulHealthCheck: parsed.lastSuccessfulHealthCheck ?? null,
     };
   } catch {
     return { ...EMPTY };
@@ -40,6 +53,17 @@ export function setAgentConfig(cfg: AgentConfig): void {
   } catch {
     /* ignore */
   }
+}
+
+export function toAgentRuntimeConfig(config = getAgentConfig()) {
+  if (!config.mode) return null;
+  return {
+    mode: config.mode,
+    model: config.model,
+    ollamaBaseUrl: config.ollamaBaseUrl,
+    openrouterKey: config.openrouterKey,
+    generationTimeoutMs: config.generationTimeoutMs,
+  };
 }
 
 export function clearAgentConfig(): void {

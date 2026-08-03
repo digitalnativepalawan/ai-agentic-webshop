@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { AdminGate, useAdminAuth } from "./AdminGate";
+import { useAdminShellStatus } from "./AdminShell";
 import { PostCalendar } from "./social-media/PostCalendar";
 import { PostComposer } from "./social-media/PostComposer";
 import { PostQueue } from "./social-media/PostQueue";
@@ -28,6 +29,8 @@ import {
   testPostizConnection,
 } from "@/lib/postiz.functions";
 import type { PostizIntegration, PostizPost } from "@/lib/postiz.schemas";
+import { testAgentBrainConnection } from "@/lib/agent.functions";
+import { getAgentConfig, toAgentRuntimeConfig } from "@/lib/agentConfig";
 
 type View =
   | "dashboard"
@@ -61,11 +64,25 @@ const NAV: Array<{
 
 const EMPTY_CONNECTION: PostizConnectionState = {
   connected: false,
+  authenticated: false,
   urlConfigured: false,
   apiKeyConfigured: false,
   host: null,
+  endpoint: "Not tested",
   checkedAt: null,
+  failedAt: null,
   integrationCount: 0,
+  facebookConnected: false,
+  instagramConnected: false,
+  error: null,
+};
+
+type AgentHealth = {
+  state: "idle" | "checking" | "connected" | "failed";
+  provider: string | null;
+  model: string | null;
+  checkedAt: string | null;
+  error: string;
 };
 
 function dateRange() {
@@ -77,10 +94,12 @@ function dateRange() {
 }
 
 function SocialMediaManager() {
-  const { passkey, lock } = useAdminAuth();
+  const { passkey } = useAdminAuth();
+  const { setStatus: setShellStatus } = useAdminShellStatus();
   const listAccounts = useServerFn(listPostizConnectedAccounts);
   const listPosts = useServerFn(listSocialPosts);
   const testConnection = useServerFn(testPostizConnection);
+  const testAgent = useServerFn(testAgentBrainConnection);
   const [view, setView] = useState<View>("create");
   const [integrations, setIntegrations] = useState<PostizIntegration[]>([]);
   const [posts, setPosts] = useState<PostizPost[]>([]);
@@ -91,6 +110,13 @@ function SocialMediaManager() {
   const [connectionBusy, setConnectionBusy] = useState(false);
   const [error, setError] = useState("");
   const [connectionError, setConnectionError] = useState("");
+  const [agentHealth, setAgentHealth] = useState<AgentHealth>({
+    state: "idle",
+    provider: null,
+    model: null,
+    checkedAt: null,
+    error: "",
+  });
 
   const refreshAccounts = useCallback(async () => {
     setRefreshing(true);
@@ -130,6 +156,11 @@ function SocialMediaManager() {
       if (!active) return;
       if (connectionResult.status === "fulfilled") {
         setConnection({ ...connectionResult.value, host: connectionResult.value.host ?? null });
+        if (!connectionResult.value.connected) {
+          setConnectionError(
+            connectionResult.value.error?.message ?? "Postiz connection test failed.",
+          );
+        }
       } else {
         setConnectionError(
           connectionResult.reason instanceof Error
@@ -162,9 +193,10 @@ function SocialMediaManager() {
     try {
       const result = await testConnection({ data: { passkey } });
       setConnection({ ...result, host: result.host ?? null });
-      await refreshAccounts();
+      if (result.connected) await refreshAccounts();
+      else setConnectionError(result.error?.message ?? "Postiz connection test failed.");
     } catch (testError) {
-      setConnection((current) => ({ ...current, connected: false }));
+      setConnection((current) => ({ ...current, connected: false, authenticated: false }));
       setConnectionError(
         testError instanceof Error ? testError.message : "Postiz connection test failed.",
       );
@@ -172,6 +204,78 @@ function SocialMediaManager() {
       setConnectionBusy(false);
     }
   }
+
+  const runAgentTest = useCallback(async () => {
+    const config = toAgentRuntimeConfig(getAgentConfig());
+    if (!config) {
+      setAgentHealth({
+        state: "failed",
+        provider: null,
+        model: null,
+        checkedAt: null,
+        error: "No Agent Brain configuration is saved.",
+      });
+      return;
+    }
+    setAgentHealth((current) => ({ ...current, state: "checking", error: "" }));
+    try {
+      const result = await testAgent({ data: { passkey, config } });
+      setAgentHealth({
+        state: "connected",
+        provider: result.provider,
+        model: result.model,
+        checkedAt: result.checkedAt,
+        error: "",
+      });
+    } catch (agentError) {
+      setAgentHealth({
+        state: "failed",
+        provider: config.mode,
+        model: config.model,
+        checkedAt: null,
+        error:
+          agentError instanceof Error ? agentError.message : "Agent Brain health check failed.",
+      });
+    }
+  }, [passkey, testAgent]);
+
+  useEffect(() => {
+    runAgentTest();
+  }, [runAgentTest]);
+
+  useEffect(() => {
+    setShellStatus({
+      ai: {
+        state: agentHealth.state,
+        label:
+          agentHealth.state === "connected"
+            ? `${agentHealth.provider}: ${agentHealth.model}`
+            : agentHealth.state === "failed"
+              ? "AI failed"
+              : "AI checking",
+        checkedAt: agentHealth.checkedAt,
+      },
+      postiz: {
+        state: connectionBusy
+          ? "checking"
+          : connection.connected
+            ? "connected"
+            : connection.error
+              ? "failed"
+              : "idle",
+        label: connection.connected
+          ? `Postiz · ${connection.integrationCount} accounts`
+          : connectionBusy
+            ? "Postiz testing"
+            : connection.error
+              ? "Postiz failed"
+              : "Postiz not checked",
+        checkedAt: connection.checkedAt,
+      },
+      activityCount: posts.filter((post) => post.state === "ERROR" || post.state === "QUEUE")
+        .length,
+    });
+  }, [agentHealth, connection, connectionBusy, posts, setShellStatus]);
 
   const publishedCount = useMemo(
     () => posts.filter((post) => post.state === "PUBLISHED").length,
@@ -230,15 +334,23 @@ function SocialMediaManager() {
             <span
               className={`rounded-full border px-3 py-1 text-[11px] ${connection.connected ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600" : "border-gold/25 text-muted"}`}
             >
-              {connection.connected ? "Postiz active" : "Postiz not tested"}
+              {connection.connected && connection.checkedAt
+                ? `Postiz verified · ${new Date(connection.checkedAt).toLocaleTimeString("en-PH", { timeZone: "Asia/Manila" })}`
+                : connectionBusy
+                  ? "Postiz testing"
+                  : connection.error
+                    ? "Postiz failed"
+                    : "Postiz not tested"}
             </span>
-            <button
-              type="button"
-              onClick={lock}
-              className="focus-ring rounded-md border border-line/30 px-3 py-2 text-xs"
+            <span
+              className={`rounded-full border px-3 py-1 text-[11px] ${agentHealth.state === "connected" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700" : agentHealth.state === "failed" ? "border-crimson/30 text-crimson" : "border-line/25 text-muted"}`}
             >
-              Lock
-            </button>
+              {agentHealth.state === "connected"
+                ? `${agentHealth.provider} · ${agentHealth.model}`
+                : agentHealth.state === "checking"
+                  ? "AI checking"
+                  : "AI unavailable"}
+            </span>
           </div>
         </div>
 
@@ -297,7 +409,6 @@ function SocialMediaManager() {
               <PostizConnection
                 state={connection}
                 busy={connectionBusy}
-                error={connectionError}
                 onTest={runConnectionTest}
               />
             ) : null}
@@ -356,9 +467,34 @@ function SocialMediaManager() {
                 <p className="eyebrow">AI Brain</p>
                 <h2 className="font-display text-2xl">Shared model configuration</h2>
                 <p className="mt-2 max-w-2xl text-sm text-muted">
-                  The Social Media Operator uses the existing OpenRouter or Ollama selection. Model
-                  credentials and selection remain managed in Operator Admin.
+                  The Social Media Operator uses the exact provider, base URL, model, and timeout
+                  saved in Operator Admin. Health checks and generation run on the application
+                  server.
                 </p>
+                <div
+                  className={`mt-4 rounded-xl border p-4 ${agentHealth.state === "connected" ? "border-emerald-500/25 bg-emerald-500/5" : "border-crimson/25 bg-crimson/5"}`}
+                >
+                  <p className="text-sm font-medium">
+                    {agentHealth.state === "connected"
+                      ? `${agentHealth.provider} connected · ${agentHealth.model}`
+                      : agentHealth.error || "Agent Brain not checked"}
+                  </p>
+                  {agentHealth.checkedAt ? (
+                    <p className="mt-1 font-mono text-[10px] text-faint">
+                      Verified{" "}
+                      {new Date(agentHealth.checkedAt).toLocaleString("en-PH", {
+                        timeZone: "Asia/Manila",
+                      })}
+                    </p>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={runAgentTest}
+                    className="mt-3 rounded-md border border-line/30 px-3 py-2 text-xs"
+                  >
+                    Test Agent Brain
+                  </button>
+                </div>
                 <Link
                   to="/admin/operators"
                   className="focus-ring mt-5 inline-flex rounded-md bg-gold px-4 py-2 text-sm font-medium text-[#0b0b0b]"

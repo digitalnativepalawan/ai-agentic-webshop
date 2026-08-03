@@ -6,11 +6,11 @@ import type { PostizIntegration, PostizMedia } from "@/lib/postiz.schemas";
 type PreviewPlatform = "facebook" | "instagram";
 
 export function PostPreview({
-  content,
+  copies,
   media,
   integrations,
 }: {
-  content: string;
+  copies: { base: string; facebook: string; instagram: string };
   media: PostizMedia[];
   integrations: PostizIntegration[];
 }) {
@@ -29,6 +29,7 @@ export function PostPreview({
       ? item.identifier === "facebook"
       : item.identifier.startsWith("instagram"),
   );
+  const content = copies[platform] || copies.base;
 
   return (
     <section className="card p-4 sm:p-5">

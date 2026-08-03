@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createHash, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import type { Operator } from "./types";
 
@@ -45,20 +44,6 @@ function rowToOperator(row: Row): AdminOperator {
   };
 }
 
-function passkeyMatches(input: string): boolean {
-  const expected = process.env.ADMIN_PASSKEY;
-  if (!expected) return false;
-  const a = createHash("sha256").update(input, "utf8").digest();
-  const b = createHash("sha256").update(expected, "utf8").digest();
-  return timingSafeEqual(a, b);
-}
-
-function requirePasskey(passkey: string) {
-  if (!passkeyMatches(passkey)) {
-    throw new Error("Invalid admin passkey");
-  }
-}
-
 const operatorSchema = z.object({
   id: z.string().min(1).max(120),
   kind: z.enum(["operator", "setup"]),
@@ -74,7 +59,9 @@ const operatorSchema = z.object({
     "mission-control",
     "local-business",
   ]),
-  badges: z.array(z.object({ label: z.string().max(120), tone: z.enum(["gold", "crimson", "neutral"]) })).max(8),
+  badges: z
+    .array(z.object({ label: z.string().max(120), tone: z.enum(["gold", "crimson", "neutral"]) }))
+    .max(8),
   price: z.object({
     amount: z.number().int().min(0).max(10_000_000),
     currency: z.literal("PHP"),
@@ -103,11 +90,9 @@ const operatorSchema = z.object({
 // PUBLIC — visible operators only. Anyone can call.
 export const listPublicOperators = createServerFn({ method: "GET" }).handler(async () => {
   const { createClient } = await import("@supabase/supabase-js");
-  const client = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_PUBLISHABLE_KEY!,
-    { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-  );
+  const client = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+  });
   const { data, error } = await (client as any)
     .from("operators")
     .select("*")
@@ -119,9 +104,10 @@ export const listPublicOperators = createServerFn({ method: "GET" }).handler(asy
 
 // ADMIN — all rows, passkey-gated.
 export const listAllOperators = createServerFn({ method: "POST" })
-  .inputValidator((input: { passkey: string }) => z.object({ passkey: z.string() }).parse(input))
+  .validator((input: { passkey: string }) => z.object({ passkey: z.string() }).parse(input))
   .handler(async ({ data }) => {
-    requirePasskey(data.passkey);
+    const auth = await import("./admin-auth.server");
+    auth.requireAdminSession(data.passkey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows, error } = await supabaseAdmin
       .from("operators" as any)
@@ -132,15 +118,21 @@ export const listAllOperators = createServerFn({ method: "POST" })
   });
 
 export const verifyAdminPasskey = createServerFn({ method: "POST" })
-  .inputValidator((input: { passkey: string }) => z.object({ passkey: z.string() }).parse(input))
-  .handler(async ({ data }) => ({ ok: passkeyMatches(data.passkey) }));
+  .validator((input: { passkey: string }) =>
+    z.object({ passkey: z.string().min(1).max(512) }).parse(input),
+  )
+  .handler(async ({ data }) => {
+    const auth = await import("./admin-auth.server");
+    return auth.createAdminSession(data.passkey);
+  });
 
 export const upsertOperator = createServerFn({ method: "POST" })
-  .inputValidator((input: { passkey: string; operator: unknown }) =>
+  .validator((input: { passkey: string; operator: unknown }) =>
     z.object({ passkey: z.string(), operator: operatorSchema }).parse(input),
   )
   .handler(async ({ data }) => {
-    requirePasskey(data.passkey);
+    const auth = await import("./admin-auth.server");
+    auth.requireAdminSession(data.passkey);
     const op = data.operator;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("operators" as any).upsert({
@@ -166,13 +158,17 @@ export const upsertOperator = createServerFn({ method: "POST" })
   });
 
 export const deleteOperator = createServerFn({ method: "POST" })
-  .inputValidator((input: { passkey: string; id: string }) =>
+  .validator((input: { passkey: string; id: string }) =>
     z.object({ passkey: z.string(), id: z.string().min(1) }).parse(input),
   )
   .handler(async ({ data }) => {
-    requirePasskey(data.passkey);
+    const auth = await import("./admin-auth.server");
+    auth.requireAdminSession(data.passkey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("operators" as any).delete().eq("id", data.id);
+    const { error } = await supabaseAdmin
+      .from("operators" as any)
+      .delete()
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });

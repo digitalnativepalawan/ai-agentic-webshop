@@ -1,4 +1,4 @@
-import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { OperatorMedia } from "./operator-media";
@@ -13,14 +13,6 @@ const allowedTypes = [
   "video/webm",
   "video/quicktime",
 ] as const;
-
-function requirePasskey(passkey: string) {
-  const expected = process.env.ADMIN_PASSKEY;
-  if (!expected) throw new Error("Admin passkey is not configured");
-  const inputHash = createHash("sha256").update(passkey, "utf8").digest();
-  const expectedHash = createHash("sha256").update(expected, "utf8").digest();
-  if (!timingSafeEqual(inputHash, expectedHash)) throw new Error("Invalid admin passkey");
-}
 
 function rowToMedia(row: any): OperatorMedia {
   return {
@@ -46,39 +38,51 @@ export const listOperatorMedia = createServerFn({ method: "GET" }).handler(async
 });
 
 export const requestOperatorMediaUpload = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({
-    passkey: z.string(),
-    operatorId: z.string().min(1).max(120),
-    filename: z.string().min(1).max(180),
-    contentType: z.enum(allowedTypes),
-    size: z.number().int().positive().max(104857600),
-  }).parse(input))
+  .validator((input: unknown) =>
+    z
+      .object({
+        passkey: z.string(),
+        operatorId: z.string().min(1).max(120),
+        filename: z.string().min(1).max(180),
+        contentType: z.enum(allowedTypes),
+        size: z.number().int().positive().max(104857600),
+      })
+      .parse(input),
+  )
   .handler(async ({ data }) => {
-    requirePasskey(data.passkey);
+    const auth = await import("./admin-auth.server");
+    auth.requireAdminSession(data.passkey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const safeName = data.filename.replace(/[^a-zA-Z0-9._-]+/g, "-");
     const path = `${data.operatorId}/${randomUUID()}-${safeName}`;
-    const { data: signed, error } = await supabaseAdmin.storage.from(BUCKET).createSignedUploadUrl(path);
+    const { data: signed, error } = await supabaseAdmin.storage
+      .from(BUCKET)
+      .createSignedUploadUrl(path);
     if (error) throw new Error(error.message);
     const publicUrl = supabaseAdmin.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
     return { path, token: signed.token, publicUrl };
   });
 
 export const saveOperatorMedia = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({
-    passkey: z.string(),
-    media: z.object({
-      id: z.string().uuid(),
-      operatorId: z.string().min(1).max(120),
-      type: z.enum(["image", "video"]),
-      url: z.string().url(),
-      storagePath: z.string().min(1),
-      alt: z.string().max(240),
-      sortOrder: z.number().int().min(0).max(1000),
-    }),
-  }).parse(input))
+  .validator((input: unknown) =>
+    z
+      .object({
+        passkey: z.string(),
+        media: z.object({
+          id: z.string().uuid(),
+          operatorId: z.string().min(1).max(120),
+          type: z.enum(["image", "video"]),
+          url: z.string().url(),
+          storagePath: z.string().min(1),
+          alt: z.string().max(240),
+          sortOrder: z.number().int().min(0).max(1000),
+        }),
+      })
+      .parse(input),
+  )
   .handler(async ({ data }) => {
-    requirePasskey(data.passkey);
+    const auth = await import("./admin-auth.server");
+    auth.requireAdminSession(data.passkey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const media = data.media;
     const { error } = await supabaseAdmin.from("operator_media" as any).upsert({
@@ -95,17 +99,27 @@ export const saveOperatorMedia = createServerFn({ method: "POST" })
   });
 
 export const deleteOperatorMedia = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({
-    passkey: z.string(),
-    id: z.string().uuid(),
-    storagePath: z.string().min(1),
-  }).parse(input))
+  .validator((input: unknown) =>
+    z
+      .object({
+        passkey: z.string(),
+        id: z.string().uuid(),
+        storagePath: z.string().min(1),
+      })
+      .parse(input),
+  )
   .handler(async ({ data }) => {
-    requirePasskey(data.passkey);
+    const auth = await import("./admin-auth.server");
+    auth.requireAdminSession(data.passkey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error: storageError } = await supabaseAdmin.storage.from(BUCKET).remove([data.storagePath]);
+    const { error: storageError } = await supabaseAdmin.storage
+      .from(BUCKET)
+      .remove([data.storagePath]);
     if (storageError) throw new Error(storageError.message);
-    const { error } = await supabaseAdmin.from("operator_media" as any).delete().eq("id", data.id);
+    const { error } = await supabaseAdmin
+      .from("operator_media" as any)
+      .delete()
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });

@@ -94,6 +94,9 @@ export const createPostizPostSchema = adminPasskeySchema.extend({
   type: z.enum(["now", "schedule", "draft"]),
   date: z.string().datetime(),
   content: z.string().min(1).max(10_000),
+  platformContent: z
+    .object({ facebook: z.string().max(10_000), instagram: z.string().max(10_000) })
+    .optional(),
   integrationIds: z.array(z.string().min(1)).min(1).max(20),
   media: z.array(postizMediaSchema).max(10).default([]),
 });

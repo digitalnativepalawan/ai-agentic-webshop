@@ -1,43 +1,85 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
+
 import { verifyAdminPasskey } from "@/lib/operators.functions";
-import { useOperatorCatalog } from "@/context/OperatorCatalogContext";
 
-const SESSION_KEY = "merqato.operator-admin.passkey";
+const SESSION_KEY = "merqato.operator-admin.session.v1";
 
+type StoredSession = { token: string; expiresAt: string };
 type AdminAuthValue = { passkey: string; lock: () => void };
+
 const AdminAuthContext = createContext<AdminAuthValue | null>(null);
 
+function readSession(): StoredSession | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const value = JSON.parse(sessionStorage.getItem(SESSION_KEY) ?? "null") as StoredSession | null;
+    if (!value?.token || new Date(value.expiresAt).getTime() <= Date.now()) {
+      sessionStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return value;
+  } catch {
+    sessionStorage.removeItem(SESSION_KEY);
+    return null;
+  }
+}
+
 export function useAdminAuth() {
-  const ctx = useContext(AdminAuthContext);
-  if (!ctx) throw new Error("useAdminAuth must be inside AdminGate");
-  return ctx;
+  const context = useContext(AdminAuthContext);
+  if (!context) throw new Error("useAdminAuth must be inside AdminGate");
+  return context;
 }
 
 export function AdminGate({ children }: { children: ReactNode }) {
   const verify = useServerFn(verifyAdminPasskey);
-  const catalog = useOperatorCatalog();
-  const [passkey, setPasskey] = useState<string | null>(() =>
-    typeof window !== "undefined" ? sessionStorage.getItem(SESSION_KEY) : null,
-  );
+  const [session, setSession] = useState<StoredSession | null>(null);
+  const [sessionChecked, setSessionChecked] = useState(false);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
-  // Dev mode: allow access with simple passkey "admin" in development
-  const isDev = typeof process !== "undefined" && (process.env.NODE_ENV === "development" || window.location.hostname === "localhost");
-  const devPasskey = "admin";
+  function lock() {
+    sessionStorage.removeItem(SESSION_KEY);
+    setSession(null);
+  }
 
-  if (passkey) {
+  useEffect(() => {
+    setSession(readSession());
+    setSessionChecked(true);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("merqato-admin-lock", lock);
+    if (!session) return () => window.removeEventListener("merqato-admin-lock", lock);
+    const timeout = window.setTimeout(
+      lock,
+      Math.max(0, new Date(session.expiresAt).getTime() - Date.now()),
+    );
+    return () => {
+      window.clearTimeout(timeout);
+      window.removeEventListener("merqato-admin-lock", lock);
+    };
+  }, [session]);
+
+  if (!sessionChecked) {
     return (
-      <AdminAuthContext.Provider value={{ passkey, lock: () => { sessionStorage.removeItem(SESSION_KEY); setPasskey(null); } }}>
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center text-sm text-muted">
+        Restoring operator session…
+      </div>
+    );
+  }
+
+  if (session) {
+    return (
+      <AdminAuthContext.Provider value={{ passkey: session.token, lock }}>
         {children}
       </AdminAuthContext.Provider>
     );
   }
 
   return (
-    <div className="shell flex min-h-[70vh] items-center justify-center py-16">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-16">
       <form
         className="card w-full max-w-md p-7"
         onSubmit={async (event) => {
@@ -45,47 +87,38 @@ export function AdminGate({ children }: { children: ReactNode }) {
           setBusy(true);
           setError("");
           try {
-            // In dev mode, accept simple passkey
-            if (isDev && input === devPasskey) {
-              sessionStorage.setItem(SESSION_KEY, input);
-              setPasskey(input);
-              return;
-            }
-            const { ok } = await verify({ data: { passkey: input } });
-            if (!ok) {
+            const result = await verify({ data: { passkey: input } });
+            if (!result.ok) {
               setError("Incorrect passkey");
               return;
             }
-            sessionStorage.setItem(SESSION_KEY, input);
-            await catalog.loadAdmin(input);
-            setPasskey(input);
-          } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to verify");
+            const nextSession = { token: result.sessionToken, expiresAt: result.expiresAt };
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify(nextSession));
+            setSession(nextSession);
+          } catch (verificationError) {
+            setError(
+              verificationError instanceof Error ? verificationError.message : "Failed to verify",
+            );
           } finally {
             setBusy(false);
           }
         }}
       >
         <p className="eyebrow">Admin access</p>
-        <h1 className="font-display text-4xl font-medium">AI Operator Admin</h1>
+        <h1 className="font-display text-4xl font-medium">Operator Console</h1>
         <p className="mt-3 text-sm text-muted">
-          Enter the admin passkey to manage the operators shown on the site.
-          {isDev && (
-            <span className="block mt-2 text-xs text-gold">
-              Dev mode: enter "admin" to unlock
-            </span>
-          )}
+          Enter the development admin passkey. Sessions expire automatically and must be replaced
+          with production authentication before deployment.
         </p>
         <input
           className="input mt-6 w-full"
           type="password"
-          inputMode="numeric"
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Passkey"
           autoFocus
         />
-        {error && <p className="mt-2 text-sm text-crimson">{error}</p>}
+        {error ? <p className="mt-2 text-sm text-crimson">{error}</p> : null}
         <button
           disabled={busy}
           className="focus-ring mt-4 w-full rounded-md bg-gold px-4 py-3 text-sm font-medium text-[#0b0b0b] disabled:opacity-60"

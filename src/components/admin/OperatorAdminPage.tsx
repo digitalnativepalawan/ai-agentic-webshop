@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { AdminGate, useAdminAuth } from "./AdminGate";
 import { OperatorDeleteDialog } from "./OperatorDeleteDialog";
 import { OperatorEditorDialog } from "./OperatorEditorDialog";
 import { useOperatorCatalog, type EditableOperator } from "@/context/OperatorCatalogContext";
 import { useOperatorMedia } from "@/hooks/useOperatorMedia";
-import {
-  getAgentConfig,
-  setAgentConfig,
-  checkOpenRouter,
-  listOllamaModels,
-  type AgentMode,
-} from "@/lib/agentConfig";
+import { getAgentConfig, setAgentConfig, type AgentMode } from "@/lib/agentConfig";
+import { listAgentBrainModels, testAgentBrainConnection } from "@/lib/agent.functions";
 
 function blankOperator(order: number): EditableOperator {
   return {
@@ -46,6 +42,8 @@ function OperatorManager() {
   const catalog = useOperatorCatalog();
   const mediaCatalog = useOperatorMedia();
   const { passkey, lock } = useAdminAuth();
+  const testAgent = useServerFn(testAgentBrainConnection);
+  const listAgentModels = useServerFn(listAgentBrainModels);
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [editing, setEditing] = useState<EditableOperator | null>(null);
@@ -55,6 +53,8 @@ function OperatorManager() {
   const [mode, setMode] = useState<AgentMode | null>(cfg.mode);
   const [keyInput, setKeyInput] = useState(cfg.openrouterKey);
   const [modelInput, setModelInput] = useState(cfg.model);
+  const [ollamaBaseUrl, setOllamaBaseUrl] = useState(cfg.ollamaBaseUrl);
+  const [generationTimeoutMs, setGenerationTimeoutMs] = useState(cfg.generationTimeoutMs);
   const [orModels, setOrModels] = useState<string[]>([]);
   const [status, setStatus] = useState<"idle" | "checking" | "ok" | "bad">("idle");
   const [statusMsg, setStatusMsg] = useState("");
@@ -90,53 +90,88 @@ function OperatorManager() {
     setStatus("checking");
     setStatusMsg("Checking connection…");
     try {
-      if (mode === "openrouter") {
-        if (!keyInput.trim()) throw new Error("Paste an OpenRouter key first.");
-        const r = await checkOpenRouter(keyInput);
-        if (!r.ok) throw new Error("Key rejected by OpenRouter.");
-        setStatusMsg(`OpenRouter connected — ${r.models.length} models available.`);
-        setStatus("ok");
-      } else if (mode === "ollama") {
-        const r = await listOllamaModels();
-        setOrModels(r.models);
-        if (!r.ok) throw new Error("No Ollama device found at localhost:11434. Is it running?");
-        if (!modelInput && r.models.length) setModelInput(r.models[0]);
-        setStatusMsg(`Ollama live — ${r.models.length} local model(s) found.`);
-        setStatus("ok");
-      } else {
-        throw new Error("Pick OpenRouter or Local Ollama first.");
-      }
+      if (!mode) throw new Error("Pick OpenRouter or Local Ollama first.");
+      if (!modelInput.trim()) throw new Error("Enter or select a model first.");
+      const result = await testAgent({
+        data: {
+          passkey,
+          config: {
+            mode,
+            model: modelInput.trim(),
+            ollamaBaseUrl: ollamaBaseUrl.trim(),
+            openrouterKey: keyInput.trim(),
+            generationTimeoutMs,
+          },
+        },
+      });
+      setOrModels(result.models);
+      setStatusMsg(
+        `${result.provider === "ollama" ? "Ollama" : "OpenRouter"} verified — ${result.model} is available.`,
+      );
+      setStatus("ok");
     } catch (e) {
       setStatus("bad");
       setStatusMsg(e instanceof Error ? e.message : "Connection failed.");
     }
   }
 
+  async function syncOllamaModels() {
+    setStatus("checking");
+    setStatusMsg("Checking Ollama and loading installed models…");
+    try {
+      const result = await listAgentModels({
+        data: { passkey, ollamaBaseUrl: ollamaBaseUrl.trim() },
+      });
+      setOrModels(result.models);
+      if (result.models.length === 0) {
+        setStatus("bad");
+        setStatusMsg("Ollama is reachable, but no installed models were returned.");
+        return;
+      }
+      setModelInput((current) =>
+        result.models.includes(current)
+          ? current
+          : result.models.includes("qwen2.5-coder:7b")
+            ? "qwen2.5-coder:7b"
+            : result.models[0],
+      );
+      setStatus("idle");
+      setStatusMsg(
+        `${result.models.length} installed Ollama model${result.models.length === 1 ? "" : "s"} found. Save & connect to verify the selection.`,
+      );
+    } catch (error) {
+      setStatus("bad");
+      setStatusMsg(error instanceof Error ? error.message : "Could not load Ollama models.");
+    }
+  }
+
   async function saveConfig() {
     try {
-      if (mode === "openrouter") {
-        if (!keyInput.trim()) throw new Error("Paste an OpenRouter key.");
-        const r = await checkOpenRouter(keyInput);
-        if (!r.ok) throw new Error("Key rejected by OpenRouter.");
-        setAgentConfig({
-          mode: "openrouter",
-          openrouterKey: keyInput.trim(),
-          model: modelInput.trim() || r.models[0],
-        });
-        setStatusMsg(`OpenRouter connected — ${r.models.length} models.`);
-        setStatus("ok");
-      } else if (mode === "ollama") {
-        if (!modelInput.trim()) throw new Error("Select a local Ollama model.");
-        const r = await listOllamaModels();
-        setOrModels(r.models);
-        if (!r.models.includes(modelInput.trim()))
-          throw new Error("That model isn't on your device.");
-        setAgentConfig({ mode: "ollama", openrouterKey: "", model: modelInput.trim() });
-        setStatusMsg(`Ollama live — using ${modelInput.trim()}.`);
-        setStatus("ok");
-      } else {
-        throw new Error("Pick OpenRouter or Local Ollama first.");
-      }
+      if (!mode) throw new Error("Pick OpenRouter or Local Ollama first.");
+      if (!modelInput.trim()) throw new Error("Enter or select a model first.");
+      const result = await testAgent({
+        data: {
+          passkey,
+          config: {
+            mode,
+            model: modelInput.trim(),
+            ollamaBaseUrl: ollamaBaseUrl.trim(),
+            openrouterKey: keyInput.trim(),
+            generationTimeoutMs,
+          },
+        },
+      });
+      setOrModels(result.models);
+      setAgentConfig({
+        mode,
+        openrouterKey: mode === "openrouter" ? keyInput.trim() : "",
+        model: result.model,
+        ollamaBaseUrl: ollamaBaseUrl.trim(),
+        generationTimeoutMs,
+        lastSuccessfulHealthCheck: result.checkedAt,
+      });
+      setStatusMsg(`Verified and saved — using ${result.model}.`);
+      setStatus("ok");
       setMessage("Agent brain connected.");
     } catch (e) {
       setStatus("bad");
@@ -223,7 +258,6 @@ function OperatorManager() {
                 setMode(m);
                 setStatus("idle");
                 setStatusMsg("");
-                if (m === "ollama") verify();
               }}
               className={`focus-ring rounded-md border px-4 py-2 text-sm ${mode === m ? "border-gold bg-gold/[0.08] text-gold" : "border-line/30 text-muted hover:border-gold/40"}`}
             >
@@ -261,6 +295,14 @@ function OperatorManager() {
         {mode === "ollama" && (
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="flex flex-col gap-1.5 text-[12px] text-muted">
+              Ollama base URL
+              <input
+                value={ollamaBaseUrl}
+                onChange={(event) => setOllamaBaseUrl(event.target.value)}
+                className="focus-ring w-full rounded-md border border-line/25 bg-bg/60 px-3 py-2 font-mono text-[12.5px] text-ink"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-[12px] text-muted">
               Local Ollama model (synced from your device)
               <select
                 value={modelInput}
@@ -275,14 +317,40 @@ function OperatorManager() {
                 ))}
               </select>
             </label>
-            <div className="flex items-end">
+            <label className="flex flex-col gap-1.5 text-[12px] text-muted">
+              Generation timeout
+              <select
+                value={generationTimeoutMs}
+                onChange={(event) => setGenerationTimeoutMs(Number(event.target.value))}
+                className="focus-ring w-full rounded-md border border-line/25 bg-bg/60 px-3 py-2 text-[13px] text-ink"
+              >
+                <option value={60000}>60 seconds</option>
+                <option value={90000}>90 seconds</option>
+                <option value={120000}>120 seconds</option>
+              </select>
+            </label>
+            <div className="flex flex-wrap items-end gap-2">
               <button
-                onClick={verify}
+                onClick={syncOllamaModels}
                 className="focus-ring rounded-md border border-line/30 px-4 py-2 text-sm text-muted hover:border-gold/40"
               >
                 Sync models from device
               </button>
+              <button
+                onClick={verify}
+                disabled={!modelInput.trim()}
+                className="focus-ring rounded-md border border-line/30 px-4 py-2 text-sm text-muted hover:border-gold/40 disabled:opacity-50"
+              >
+                Test selected model
+              </button>
             </div>
+            {modelInput === "qwen2.5-coder:7b" ? (
+              <p className="rounded-md border border-gold/25 bg-gold/5 px-3 py-2 text-[11px] text-gold sm:col-span-2">
+                qwen2.5-coder:7b remains supported. A general instruction model may produce more
+                natural hospitality and social-media copy; models are never downloaded or switched
+                automatically.
+              </p>
+            ) : null}
           </div>
         )}
 
@@ -301,7 +369,14 @@ function OperatorManager() {
           </button>
           <button
             onClick={() => {
-              setAgentConfig({ mode: null, openrouterKey: "", model: "" });
+              setAgentConfig({
+                mode: null,
+                openrouterKey: "",
+                model: "",
+                ollamaBaseUrl,
+                generationTimeoutMs,
+                lastSuccessfulHealthCheck: null,
+              });
               setMode(null);
               setStatus("idle");
               setStatusMsg("");

@@ -1,4 +1,6 @@
-import { createHash, timingSafeEqual } from "node:crypto";
+import "@tanstack/react-start/server-only";
+
+import { requireAdminSession } from "./admin-auth.server";
 
 import {
   postizIntegrationSchema,
@@ -23,6 +25,7 @@ export class PostizApiError extends Error {
   constructor(
     message: string,
     readonly status: number,
+    readonly endpoint: string,
   ) {
     super(message);
     this.name = "PostizApiError";
@@ -30,11 +33,7 @@ export class PostizApiError extends Error {
 }
 
 export function requireAdminPasskey(passkey: string): void {
-  const expected = process.env.ADMIN_PASSKEY;
-  if (!expected) throw new Error("Admin passkey is not configured");
-  const inputHash = createHash("sha256").update(passkey, "utf8").digest();
-  const expectedHash = createHash("sha256").update(expected, "utf8").digest();
-  if (!timingSafeEqual(inputHash, expectedHash)) throw new Error("Invalid admin passkey");
+  requireAdminSession(passkey);
 }
 
 function postizConfig() {
@@ -82,9 +81,10 @@ export function getPostizConfigurationStatus() {
 
 async function postizFetch(path: string, init?: RequestInit): Promise<Response> {
   const { baseUrl, apiKey } = postizConfig();
+  const endpoint = `${baseUrl}${path}`;
   const headers = new Headers(init?.headers);
   headers.set("Authorization", apiKey);
-  const response = await fetch(`${baseUrl}${path}`, {
+  const response = await fetch(endpoint, {
     ...init,
     headers,
     signal: init?.signal ?? AbortSignal.timeout(30_000),
@@ -111,6 +111,7 @@ async function postizFetch(path: string, init?: RequestInit): Promise<Response> 
     throw new PostizApiError(
       `Postiz request failed (${response.status}): ${detail.slice(0, 300) || response.statusText}`,
       response.status,
+      endpoint,
     );
   }
   return response;
@@ -172,7 +173,17 @@ export async function createPostizPost(input: CreatePostizPostInput) {
     tags: [],
     posts: selected.map((integration) => ({
       integration: { id: integration.id },
-      value: [{ content: input.content, image: input.media.map(({ id, path }) => ({ id, path })) }],
+      value: [
+        {
+          content:
+            integration.identifier === "facebook"
+              ? input.platformContent?.facebook || input.content
+              : integration.identifier.startsWith("instagram")
+                ? input.platformContent?.instagram || input.content
+                : input.content,
+          image: input.media.map(({ id, path }) => ({ id, path })),
+        },
+      ],
       settings: settingsFor(integration),
     })),
   };
