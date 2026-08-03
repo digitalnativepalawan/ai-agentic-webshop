@@ -386,6 +386,33 @@ export function PostComposer({
 
   return (
     <div className="space-y-5">
+      {message || error ? (
+        <div
+          role={error ? "alert" : "status"}
+          aria-live={error ? "assertive" : "polite"}
+          className={`fixed bottom-5 right-5 z-[100] flex max-w-[min(26rem,calc(100vw-2.5rem))] items-start gap-3 rounded-xl border p-4 shadow-2xl backdrop-blur ${
+            error
+              ? "border-crimson/35 bg-bg/95 text-crimson"
+              : "border-emerald-500/35 bg-bg/95 text-emerald-700"
+          }`}
+        >
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold">{error ? "Action needed" : "Action completed"}</p>
+            <p className="mt-1 text-xs leading-relaxed">{error || message}</p>
+          </div>
+          <button
+            type="button"
+            aria-label="Dismiss status message"
+            onClick={() => {
+              setError("");
+              setMessage("");
+            }}
+            className="focus-ring rounded-md p-1 text-current opacity-70 hover:opacity-100"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      ) : null}
       <section className="card border-gold/30 p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -541,6 +568,7 @@ export function PostComposer({
                 <button
                   key={platform}
                   type="button"
+                  aria-pressed={selectedChannels.includes(platform)}
                   onClick={() => togglePlatform(platform)}
                   className={`focus-ring rounded-md border px-3 py-2 text-xs capitalize ${selectedChannels.includes(platform) ? "border-gold bg-gold/10 text-gold" : "border-line/25 text-muted"}`}
                 >
@@ -643,6 +671,7 @@ export function PostComposer({
                 key={integration.id}
                 type="button"
                 disabled={integration.disabled}
+                aria-pressed={selected}
                 onClick={() => toggleIntegration(integration.id)}
                 className={`focus-ring flex min-w-48 items-center gap-3 rounded-xl border p-3 text-left disabled:opacity-40 ${selected ? "border-gold bg-gold/8" : "border-line/20"}`}
               >
@@ -963,6 +992,7 @@ export function PostComposer({
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
+                aria-pressed={publishMode === "now"}
                 onClick={() => setPublishMode("now")}
                 className={`rounded-xl border p-3 text-left ${publishMode === "now" ? "border-gold bg-gold/10 text-gold" : "border-line/20"}`}
               >
@@ -971,6 +1001,7 @@ export function PostComposer({
               </button>
               <button
                 type="button"
+                aria-pressed={publishMode === "schedule"}
                 onClick={() => setPublishMode("schedule")}
                 className={`rounded-xl border p-3 text-left ${publishMode === "schedule" ? "border-gold bg-gold/10 text-gold" : "border-line/20"}`}
               >
@@ -1029,8 +1060,13 @@ export function PostComposer({
               <button
                 type="button"
                 onClick={() => submit(publishMode)}
-                disabled={!finalReady || Boolean(submitting) || uploading}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-4 py-3 text-sm font-medium text-[#0b0b0b] disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={Boolean(submitting) || uploading}
+                data-ready={finalReady ? "true" : "false"}
+                className={`inline-flex w-full items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 ${
+                  finalReady
+                    ? "border-gold bg-gold text-[#0b0b0b]"
+                    : "border-gold/40 bg-gold/10 text-gold"
+                }`}
               >
                 {submitting ? (
                   <Loader2 size={14} className="animate-spin" />
