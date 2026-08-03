@@ -24,8 +24,11 @@ export type PostizIntegration = z.infer<typeof postizIntegrationSchema>;
 
 export const postizMediaSchema = z.object({
   id: z.string().min(1),
-  name: z.string().optional(),
+  name: z.string().min(1),
+  originalName: z.string().nullable().optional(),
   path: z.string().url(),
+  thumbnail: z.string().url().nullable().optional(),
+  alt: z.string().nullable().optional(),
 });
 
 export type PostizMedia = z.infer<typeof postizMediaSchema>;
@@ -33,17 +36,35 @@ export type PostizMedia = z.infer<typeof postizMediaSchema>;
 export const postizPostSchema = z.object({
   id: z.string().min(1),
   content: z.string().default(""),
-  publishDate: z.string().nullable().optional(),
+  publishDate: z.string().datetime(),
+  state: z.enum(["DRAFT", "QUEUE", "PUBLISHED", "ERROR"]),
   releaseURL: z.string().nullable().optional(),
+  releaseId: z.string().nullable().optional(),
+  group: z.string().min(1),
+  creationMethod: z.string().nullable().optional(),
   integration: z.object({
     id: z.string().min(1),
-    providerIdentifier: z.string().optional(),
-    name: z.string().optional(),
+    providerIdentifier: z.string().min(1),
+    name: z.string().min(1),
     picture: z.string().nullable().optional(),
   }),
 });
 
 export type PostizPost = z.infer<typeof postizPostSchema>;
+
+export function postizContentToText(content: string): string {
+  return content
+    .replace(/<br\s*\/?\s*>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .trim();
+}
 
 export const adminPasskeySchema = z.object({
   passkey: z.string().min(1).max(512),
@@ -75,6 +96,11 @@ export const createPostizPostSchema = adminPasskeySchema.extend({
   content: z.string().min(1).max(10_000),
   integrationIds: z.array(z.string().min(1)).min(1).max(20),
   media: z.array(postizMediaSchema).max(10).default([]),
+});
+
+export const postizCreateResultSchema = z.object({
+  postId: z.string().min(1),
+  integration: z.string().min(1),
 });
 
 export type CreatePostizPostInput = z.infer<typeof createPostizPostSchema>;

@@ -2,6 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 
 import {
   postizIntegrationSchema,
+  postizCreateResultSchema,
   postizMediaSchema,
   postizPostSchema,
   type CreatePostizPostInput,
@@ -13,7 +14,9 @@ import {
 /**
  * Postiz Public API v1 client.
  * Contract: https://docs.postiz.com/public-api/introduction
- * Self-hosted base URL: {NEXT_PUBLIC_BACKEND_URL}/public/v1
+ * Self-hosted base URL: {NEXT_PUBLIC_BACKEND_URL}/public/v1. In the standard
+ * single-container install, NEXT_PUBLIC_BACKEND_URL is the public site URL
+ * plus /api.
  */
 
 export class PostizApiError extends Error {
@@ -44,8 +47,22 @@ function postizConfig() {
     throw new Error(`Postiz is not configured. Missing ${missing.join(" and ")}.`);
   }
 
-  const normalized = rawUrl.replace(/\/+$/, "");
-  const baseUrl = normalized.endsWith("/public/v1") ? normalized : `${normalized}/public/v1`;
+  let configuredUrl: URL;
+  try {
+    configuredUrl = new URL(rawUrl);
+  } catch {
+    throw new Error("POSTIZ_API_URL must be a valid absolute URL.");
+  }
+
+  const normalized = configuredUrl.toString().replace(/\/+$/, "");
+  const pathname = configuredUrl.pathname.replace(/\/+$/, "");
+  const baseUrl = pathname.endsWith("/public/v1")
+    ? normalized
+    : pathname.endsWith("/api")
+      ? `${normalized}/public/v1`
+      : configuredUrl.hostname === "api.postiz.com"
+        ? `${normalized}/public/v1`
+        : `${normalized}/api/public/v1`;
   return { baseUrl, apiKey };
 }
 
@@ -67,15 +84,29 @@ async function postizFetch(path: string, init?: RequestInit): Promise<Response> 
   const { baseUrl, apiKey } = postizConfig();
   const headers = new Headers(init?.headers);
   headers.set("Authorization", apiKey);
-  const response = await fetch(`${baseUrl}${path}`, { ...init, headers });
+  const response = await fetch(`${baseUrl}${path}`, {
+    ...init,
+    headers,
+    signal: init?.signal ?? AbortSignal.timeout(30_000),
+  });
   if (!response.ok) {
     const raw = await response.text();
-    let detail = raw;
+    let detail = response.statusText;
     try {
-      const parsed = JSON.parse(raw) as { message?: unknown; error?: unknown };
-      detail = String(parsed.message ?? parsed.error ?? raw);
+      const parsed = JSON.parse(raw) as {
+        msg?: unknown;
+        message?: unknown;
+        error?: unknown;
+        provider?: unknown;
+        name?: unknown;
+      };
+      const message = parsed.msg ?? parsed.message ?? parsed.error;
+      detail = Array.isArray(message) ? message.join("; ") : String(message ?? response.statusText);
+      if (parsed.provider || parsed.name) {
+        detail = `${String(parsed.name ?? parsed.provider)}: ${detail}`;
+      }
     } catch {
-      // Keep the plain response body.
+      if (raw && !raw.trimStart().startsWith("<")) detail = raw;
     }
     throw new PostizApiError(
       `Postiz request failed (${response.status}): ${detail.slice(0, 300) || response.statusText}`,
@@ -83,6 +114,13 @@ async function postizFetch(path: string, init?: RequestInit): Promise<Response> 
     );
   }
   return response;
+}
+
+export async function testPostizApiConnection() {
+  const response = await postizFetch("/is-connected");
+  const payload = (await response.json()) as { connected?: unknown };
+  if (payload.connected !== true) throw new Error("Postiz did not confirm an active connection.");
+  return { connected: true as const };
 }
 
 export async function listPostizIntegrations(): Promise<PostizIntegration[]> {
@@ -103,7 +141,9 @@ export async function uploadPostizMedia(input: {
 }
 
 function settingsFor(integration: PostizIntegration): Record<string, unknown> {
-  if (integration.identifier === "facebook") return { __type: "facebook" };
+  if (integration.identifier === "facebook") {
+    return { __type: "facebook", post_type: "post" };
+  }
   if (integration.identifier === "instagram" || integration.identifier === "instagram-standalone") {
     return {
       __type: integration.identifier,
@@ -142,12 +182,15 @@ export async function createPostizPost(input: CreatePostizPostInput) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  return (await response.json()) as Array<{ postId: string; integration: string }>;
+  return postizCreateResultSchema.array().parse(await response.json());
 }
 
 export async function listPostizPosts(startDate: string, endDate: string): Promise<PostizPost[]> {
   const query = new URLSearchParams({ startDate, endDate });
   const response = await postizFetch(`/posts?${query.toString()}`);
   const payload = (await response.json()) as { posts?: unknown };
-  return postizPostSchema.array().parse(payload.posts ?? []);
+  return postizPostSchema
+    .array()
+    .parse(payload.posts ?? [])
+    .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime());
 }

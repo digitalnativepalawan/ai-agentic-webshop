@@ -1,4 +1,4 @@
-import type { PostizPost } from "@/lib/postiz.schemas";
+import { postizContentToText, type PostizPost } from "@/lib/postiz.schemas";
 
 export function PostCalendar({ posts }: { posts: PostizPost[] }) {
   const days = Array.from({ length: 14 }, (_, offset) => {
@@ -9,11 +9,12 @@ export function PostCalendar({ posts }: { posts: PostizPost[] }) {
     return {
       date,
       key,
-      posts: posts.filter((post) =>
-        post.publishDate
-          ? new Date(post.publishDate).toLocaleDateString("en-CA", { timeZone: "Asia/Manila" }) ===
-            key
-          : false,
+      posts: posts.filter(
+        (post) =>
+          post.state === "QUEUE" &&
+          new Date(post.publishDate).toLocaleDateString("en-CA", {
+            timeZone: "Asia/Manila",
+          }) === key,
       ),
     };
   });
@@ -36,7 +37,7 @@ export function PostCalendar({ posts }: { posts: PostizPost[] }) {
               {day.posts.map((post) => (
                 <div key={post.id} className="rounded-md border border-gold/20 bg-gold/5 p-2">
                   <p className="line-clamp-2 text-[10px] leading-relaxed text-ink">
-                    {post.content || "Media post"}
+                    {postizContentToText(post.content) || "Media post"}
                   </p>
                   <p className="mt-1 text-[9px] text-gold">{post.integration.name}</p>
                 </div>

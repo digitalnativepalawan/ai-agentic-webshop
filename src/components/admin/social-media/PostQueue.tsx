@@ -1,14 +1,17 @@
-import { CalendarClock, ExternalLink } from "lucide-react";
+import { AlertCircle, CalendarClock, ExternalLink } from "lucide-react";
 
-import type { PostizPost } from "@/lib/postiz.schemas";
+import { postizContentToText, type PostizPost } from "@/lib/postiz.schemas";
 
 function statusFor(post: PostizPost) {
-  if (post.releaseURL)
+  if (post.state === "PUBLISHED")
     return { label: "Published", className: "text-emerald-600 bg-emerald-500/10" };
-  if (post.publishDate && new Date(post.publishDate).getTime() > Date.now()) {
+  if (post.state === "QUEUE") {
     return { label: "Scheduled", className: "text-gold bg-gold/10" };
   }
-  return { label: "Recent", className: "text-muted bg-surface-2" };
+  if (post.state === "ERROR") {
+    return { label: "Failed", className: "text-crimson bg-crimson/10" };
+  }
+  return { label: "Draft", className: "text-muted bg-surface-2" };
 }
 
 export function PostQueue({ posts, loading }: { posts: PostizPost[]; loading: boolean }) {
@@ -36,8 +39,14 @@ export function PostQueue({ posts, loading }: { posts: PostizPost[]; loading: bo
                     </span>
                   </div>
                   <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink">
-                    {post.content || "Media post"}
+                    {postizContentToText(post.content) || "Media post"}
                   </p>
+                  {post.state === "ERROR" ? (
+                    <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-crimson">
+                      <AlertCircle size={12} /> Publishing failed in Postiz. Open Postiz for the
+                      platform response and retry controls.
+                    </p>
+                  ) : null}
                   {post.publishDate ? (
                     <p className="mt-2 inline-flex items-center gap-1.5 font-mono text-[10px] text-faint">
                       <CalendarClock size={11} />

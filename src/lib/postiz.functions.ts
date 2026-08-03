@@ -13,6 +13,7 @@ export const testPostizConnection = createServerFn({ method: "POST" })
     const api = await import("./postiz.server");
     api.requireAdminPasskey(data.passkey);
     const configuration = api.getPostizConfigurationStatus();
+    await api.testPostizApiConnection();
     const integrations = await api.listPostizIntegrations();
     return {
       connected: true as const,

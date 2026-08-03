@@ -39,11 +39,7 @@ const RESORT_AGENTS = [
     icon: "Bot",
     tagline:
       "Captures and qualifies pre-stay inquiries across web, WhatsApp, and Facebook — answers fast, routes the serious ones to a human.",
-    highlights: [
-      "24/7 inquiry capture",
-      "Multi-channel (Web / WhatsApp / FB)",
-      "Qualifies leads before handoff",
-    ],
+    highlights: ["24/7 inquiry capture", "Multi-channel (Web / WhatsApp / FB)", "Qualifies leads before handoff"],
     tone: "outline" as const,
   },
   {
@@ -52,13 +48,10 @@ const RESORT_AGENTS = [
     icon: "CalendarCheck",
     tagline:
       "Turns inquiries into confirmed bookings with live availability, clear rates, and a human-approved checkout — PayMongo-ready for GCash.",
-    highlights: [
-      "Live availability + rates",
-      "Confirmed bookings, not just chats",
-      "PayMongo / GCash checkout",
-    ],
+    highlights: ["Live availability + rates", "Confirmed bookings, not just chats", "PayMongo / GCash checkout"],
     tone: "outline" as const,
   },
+
 ];
 
 function ResortAgents() {
@@ -70,11 +63,7 @@ function ResortAgents() {
         <div className="shell pb-6 pt-10 sm:pt-14">
           <div className="mb-8 flex flex-wrap gap-2.5">
             {HERO_BADGES.map((b) => (
-              <StatusChip
-                key={b.label}
-                tone="outline"
-                icon={<Icon name={b.icon} size={13} className="text-gold" />}
-              >
+              <StatusChip key={b.label} tone="outline" icon={<Icon name={b.icon} size={13} className="text-gold" />}>
                 {b.label}
               </StatusChip>
             ))}
@@ -89,12 +78,12 @@ function ResortAgents() {
             <div className="flex flex-col justify-center gap-4 lg:border-l lg:border-line/20 lg:pl-14">
               <p className="eyebrow !mb-0 !text-gold">Working agents to sell</p>
               <p className="text-[15px] leading-relaxed text-muted">
-                A portfolio of local-first AI agents built for Palawan resorts — forked from
-                open-source templates, improved in-house, and ready to deploy.
+                A portfolio of local-first AI agents built for Palawan resorts — forked from open-source
+                templates, improved in-house, and ready to deploy.
               </p>
               <p className="text-[15px] leading-relaxed text-muted">
-                Each agent is draft-first and human-approved. Run them free on local Ollama, or
-                connect an OpenRouter key for production-grade multilingual writing.
+                Each agent is draft-first and human-approved. Run them free on local Ollama, or connect an
+                OpenRouter key for production-grade multilingual writing.
               </p>
             </div>
           </div>
@@ -116,22 +105,15 @@ function ResortAgents() {
                 <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-gold/30 bg-gold/[0.06] text-gold">
                   <Icon name={agent.icon} size={22} strokeWidth={1.6} />
                 </span>
-                <StatusChip tone={agent.tone}>Available</StatusChip>
+                <StatusChip tone={agent.tone}>{agent.tone === "gold" ? "Flagship" : "Available"}</StatusChip>
               </div>
 
-              <h3 className="font-display text-[22px] font-medium leading-tight tracking-tight">
-                {agent.name}
-              </h3>
-              <p className="mt-2 flex-1 text-[13.5px] leading-relaxed text-muted">
-                {agent.tagline}
-              </p>
+              <h3 className="font-display text-[22px] font-medium leading-tight tracking-tight">{agent.name}</h3>
+              <p className="mt-2 flex-1 text-[13.5px] leading-relaxed text-muted">{agent.tagline}</p>
 
               <ul className="mt-4 space-y-1.5">
                 {agent.highlights.map((h) => (
-                  <li
-                    key={h}
-                    className="flex items-start gap-2 text-[12.5px] leading-snug text-ink/80"
-                  >
+                  <li key={h} className="flex items-start gap-2 text-[12.5px] leading-snug text-ink/80">
                     <span className="mt-0.5 text-gold">→</span>
                     {h}
                   </li>
@@ -185,8 +167,8 @@ function ResortAgents() {
             <div>
               <p className="eyebrow !mb-1.5">Get a working agent</p>
               <p className="max-w-sm text-[14px] leading-relaxed text-muted">
-                Tell us the resort and the goal. We deploy a working agent — not a pitch deck — and
-                you approve every action.
+                Tell us the resort and the goal. We deploy a working agent — not a pitch deck — and you
+                approve every action.
               </p>
             </div>
             <CTAButton to="/contact" variant="primary">

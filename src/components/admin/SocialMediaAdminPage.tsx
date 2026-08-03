@@ -23,7 +23,6 @@ import { PostQueue } from "./social-media/PostQueue";
 import { PostizConnection, type PostizConnectionState } from "./social-media/PostizConnection";
 import { SocialConnections } from "./social-media/SocialConnections";
 import {
-  getPostizConfiguration,
   listPostizConnectedAccounts,
   listSocialPosts,
   testPostizConnection,
@@ -79,7 +78,6 @@ function dateRange() {
 
 function SocialMediaManager() {
   const { passkey, lock } = useAdminAuth();
-  const getConfiguration = useServerFn(getPostizConfiguration);
   const listAccounts = useServerFn(listPostizConnectedAccounts);
   const listPosts = useServerFn(listSocialPosts);
   const testConnection = useServerFn(testPostizConnection);
@@ -124,14 +122,20 @@ function SocialMediaManager() {
     async function load() {
       setLoading(true);
       const range = dateRange();
-      const [configurationResult, accountsResult, postsResult] = await Promise.allSettled([
-        getConfiguration({ data: { passkey } }),
+      const [connectionResult, accountsResult, postsResult] = await Promise.allSettled([
+        testConnection({ data: { passkey } }),
         listAccounts({ data: { passkey } }),
         listPosts({ data: { passkey, ...range } }),
       ]);
       if (!active) return;
-      if (configurationResult.status === "fulfilled") {
-        setConnection((current) => ({ ...current, ...configurationResult.value }));
+      if (connectionResult.status === "fulfilled") {
+        setConnection({ ...connectionResult.value, host: connectionResult.value.host ?? null });
+      } else {
+        setConnectionError(
+          connectionResult.reason instanceof Error
+            ? connectionResult.reason.message
+            : "Postiz connection test failed.",
+        );
       }
       if (accountsResult.status === "fulfilled") {
         setIntegrations(accountsResult.value.integrations);
@@ -150,7 +154,7 @@ function SocialMediaManager() {
     return () => {
       active = false;
     };
-  }, [getConfiguration, listAccounts, listPosts, passkey]);
+  }, [listAccounts, listPosts, passkey, testConnection]);
 
   async function runConnectionTest() {
     setConnectionBusy(true);
@@ -170,13 +174,11 @@ function SocialMediaManager() {
   }
 
   const publishedCount = useMemo(
-    () => posts.filter((post) => Boolean(post.releaseURL)).length,
+    () => posts.filter((post) => post.state === "PUBLISHED").length,
     [posts],
   );
   const scheduledCount = useMemo(
-    () =>
-      posts.filter((post) => post.publishDate && new Date(post.publishDate).getTime() > Date.now())
-        .length,
+    () => posts.filter((post) => post.state === "QUEUE").length,
     [posts],
   );
 

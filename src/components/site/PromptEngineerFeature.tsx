@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, Code2, Loader2, Sparkles } from "lucide-react";
+import { ArrowRight, Code2, Loader2, Select, Sparkles } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { hasConfig } from "@/lib/agentConfig";
 import { generate } from "@/lib/openrouter";
@@ -23,7 +23,9 @@ const MODELS = [
 ];
 
 export function PromptEngineerFeature() {
-  const [request, setRequest] = useState("Build me a landing page for my resort in El Nido");
+  const [request, setRequest] = useState(
+    "Build me a landing page for my resort in El Nido"
+  );
   const [selectedModel, setSelectedModel] = useState("google/gemini-2.0-flash");
   const [questions, setQuestions] = useState("");
   const [contract, setContract] = useState("");
@@ -118,7 +120,9 @@ export function PromptEngineerFeature() {
 
           {/* Model Selection Dropdown */}
           <div className="w-full">
-            <label className="text-[12px] text-muted mb-1.5 block">Model</label>
+            <label className="text-[12px] text-muted mb-1.5 block">
+              Model
+            </label>
             <select
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
@@ -248,8 +252,8 @@ export function PromptEngineerFeature() {
 
           {!questions && !contract && !error && (
             <p className="text-[12.5px] leading-relaxed text-faint">
-              Type a rough request, hit Analyze. The agent streams the real requirements to clarify,
-              then a full prompt contract.
+              Type a rough request, hit Analyze. The agent streams the real requirements to
+              clarify, then a full prompt contract.
             </p>
           )}
 
