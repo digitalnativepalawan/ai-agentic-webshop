@@ -1016,6 +1016,7 @@ export function PostComposer({
                   <input
                     type="date"
                     value={date}
+                    onInput={(event) => setDate(event.currentTarget.value)}
                     onChange={(event) => setDate(event.target.value)}
                     className={`${fieldClass} min-w-0`}
                   />
@@ -1025,6 +1026,7 @@ export function PostComposer({
                   <input
                     type="time"
                     value={time}
+                    onInput={(event) => setTime(event.currentTarget.value)}
                     onChange={(event) => setTime(event.target.value)}
                     className={`${fieldClass} min-w-0`}
                   />
