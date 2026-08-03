@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { AdminGate, useAdminAuth } from "./AdminGate";
 import { OperatorDeleteDialog } from "./OperatorDeleteDialog";
 import { OperatorEditorDialog } from "./OperatorEditorDialog";
 import { useOperatorCatalog, type EditableOperator } from "@/context/OperatorCatalogContext";
 import { useOperatorMedia } from "@/hooks/useOperatorMedia";
-import { getAgentConfig, setAgentConfig, checkOpenRouter, listOllamaModels, type AgentMode } from "@/lib/agentConfig";
+import {
+  getAgentConfig,
+  setAgentConfig,
+  checkOpenRouter,
+  listOllamaModels,
+  type AgentMode,
+} from "@/lib/agentConfig";
 
 function blankOperator(order: number): EditableOperator {
   return {
@@ -53,7 +60,9 @@ function OperatorManager() {
   const [statusMsg, setStatusMsg] = useState("");
 
   useEffect(() => {
-    catalog.loadAdmin(passkey).catch((error) => setMessage(error instanceof Error ? error.message : String(error)));
+    catalog
+      .loadAdmin(passkey)
+      .catch((error) => setMessage(error instanceof Error ? error.message : String(error)));
   }, [passkey]);
 
   async function guarded(id: string, action: () => Promise<void>, done: string) {
@@ -109,14 +118,19 @@ function OperatorManager() {
         if (!keyInput.trim()) throw new Error("Paste an OpenRouter key.");
         const r = await checkOpenRouter(keyInput);
         if (!r.ok) throw new Error("Key rejected by OpenRouter.");
-        setAgentConfig({ mode: "openrouter", openrouterKey: keyInput.trim(), model: modelInput.trim() || r.models[0] });
+        setAgentConfig({
+          mode: "openrouter",
+          openrouterKey: keyInput.trim(),
+          model: modelInput.trim() || r.models[0],
+        });
         setStatusMsg(`OpenRouter connected — ${r.models.length} models.`);
         setStatus("ok");
       } else if (mode === "ollama") {
         if (!modelInput.trim()) throw new Error("Select a local Ollama model.");
         const r = await listOllamaModels();
         setOrModels(r.models);
-        if (!r.models.includes(modelInput.trim())) throw new Error("That model isn't on your device.");
+        if (!r.models.includes(modelInput.trim()))
+          throw new Error("That model isn't on your device.");
         setAgentConfig({ mode: "ollama", openrouterKey: "", model: modelInput.trim() });
         setStatusMsg(`Ollama live — using ${modelInput.trim()}.`);
         setStatus("ok");
@@ -131,7 +145,9 @@ function OperatorManager() {
   }
 
   const editingMedia = editing
-    ? mediaCatalog.media.filter((item) => item.operatorId === editing.id).sort((a, b) => a.sortOrder - b.sortOrder)
+    ? mediaCatalog.media
+        .filter((item) => item.operatorId === editing.id)
+        .sort((a, b) => a.sortOrder - b.sortOrder)
     : [];
 
   return (
@@ -140,20 +156,37 @@ function OperatorManager() {
         <div>
           <p className="eyebrow">Admin</p>
           <h1 className="font-display text-4xl font-medium">AI Operator Selection</h1>
-          <p className="mt-2 text-sm text-muted">Manage complete operator details, pricing, visibility, screenshots, and video.</p>
+          <p className="mt-2 text-sm text-muted">
+            Manage complete operator details, pricing, visibility, screenshots, and video.
+          </p>
         </div>
         <div className="flex gap-2">
+          <Link
+            to="/admin/social-media"
+            className="focus-ring rounded-md border border-gold/40 px-4 py-2 text-sm text-gold"
+          >
+            Social Media Operator
+          </Link>
           <button
-            onClick={() => { setIsNew(true); setEditing(blankOperator(catalog.operators.length)); }}
+            onClick={() => {
+              setIsNew(true);
+              setEditing(blankOperator(catalog.operators.length));
+            }}
             className="rounded-md bg-gold px-4 py-2 text-sm font-medium text-[#0b0b0b]"
           >
             Add operator
           </button>
-          <button onClick={lock} className="rounded-md border border-line px-4 py-2 text-sm">Lock</button>
+          <button onClick={lock} className="rounded-md border border-line px-4 py-2 text-sm">
+            Lock
+          </button>
         </div>
       </div>
 
-      {message && <p className="mb-4 rounded-md border border-gold/25 bg-gold/5 px-4 py-3 text-sm text-gold">{message}</p>}
+      {message && (
+        <p className="mb-4 rounded-md border border-gold/25 bg-gold/5 px-4 py-3 text-sm text-gold">
+          {message}
+        </p>
+      )}
 
       {/* AGENT MODEL CONFIG */}
       <div className="card flex flex-col gap-4 p-5">
@@ -164,7 +197,8 @@ function OperatorManager() {
           </div>
           {status === "ok" && (
             <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[12px] font-medium text-emerald-600">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" /> {mode === "ollama" ? "Ollama live" : "OpenRouter live"}
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />{" "}
+              {mode === "ollama" ? "Ollama live" : "OpenRouter live"}
             </span>
           )}
           {status === "bad" && (
@@ -175,8 +209,9 @@ function OperatorManager() {
         </div>
 
         <p className="text-sm text-muted">
-          Pick one — OpenRouter (cloud, paste a key) or your local Ollama device. The green light confirms it's
-          reachable. The site widgets use whichever you connect. No default; partners play without a key.
+          Pick one — OpenRouter (cloud, paste a key) or your local Ollama device. The green light
+          confirms it's reachable. The site widgets use whichever you connect. No default; partners
+          play without a key.
         </p>
 
         {/* mode toggle */}
@@ -184,7 +219,12 @@ function OperatorManager() {
           {(["openrouter", "ollama"] as AgentMode[]).map((m) => (
             <button
               key={m}
-              onClick={() => { setMode(m); setStatus("idle"); setStatusMsg(""); if (m === "ollama") verify(); }}
+              onClick={() => {
+                setMode(m);
+                setStatus("idle");
+                setStatusMsg("");
+                if (m === "ollama") verify();
+              }}
               className={`focus-ring rounded-md border px-4 py-2 text-sm ${mode === m ? "border-gold bg-gold/[0.08] text-gold" : "border-line/30 text-muted hover:border-gold/40"}`}
             >
               {m === "openrouter" ? "OpenRouter (cloud)" : "Local Ollama (device)"}
@@ -229,7 +269,9 @@ function OperatorManager() {
               >
                 <option value="">— select a local model —</option>
                 {orModels.map((m) => (
-                  <option key={m} value={m}>{m}</option>
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
                 ))}
               </select>
             </label>
@@ -245,7 +287,9 @@ function OperatorManager() {
         )}
 
         {statusMsg && (
-          <p className={`text-[12px] ${status === "ok" ? "text-emerald-600" : "text-crimson"}`}>{statusMsg}</p>
+          <p className={`text-[12px] ${status === "ok" ? "text-emerald-600" : "text-crimson"}`}>
+            {statusMsg}
+          </p>
         )}
 
         <div className="flex flex-wrap gap-2">
@@ -256,7 +300,13 @@ function OperatorManager() {
             Save &amp; connect
           </button>
           <button
-            onClick={() => { setAgentConfig({ mode: null, openrouterKey: "", model: "" }); setMode(null); setStatus("idle"); setStatusMsg(""); setMessage("Agent config cleared."); }}
+            onClick={() => {
+              setAgentConfig({ mode: null, openrouterKey: "", model: "" });
+              setMode(null);
+              setStatus("idle");
+              setStatusMsg("");
+              setMessage("Agent config cleared.");
+            }}
             className="rounded-md border border-line px-4 py-2 text-sm"
           >
             Clear
@@ -267,25 +317,97 @@ function OperatorManager() {
       <div className="grid gap-4">
         {catalog.operators.map((operator) => {
           const busy = busyId === operator.id;
-          const mediaCount = mediaCatalog.media.filter((item) => item.operatorId === operator.id).length;
+          const mediaCount = mediaCatalog.media.filter(
+            (item) => item.operatorId === operator.id,
+          ).length;
           return (
-            <article key={operator.id} className="card flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
+            <article
+              key={operator.id}
+              className="card flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between"
+            >
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="font-display text-2xl">{operator.name}</h2>
-                  {operator.featured && <span className="rounded-full border border-gold/30 px-2 py-0.5 text-xs text-gold">Featured</span>}
-                  {!operator.active && <span className="rounded-full border border-crimson/30 px-2 py-0.5 text-xs text-crimson">Hidden</span>}
+                  {operator.featured && (
+                    <span className="rounded-full border border-gold/30 px-2 py-0.5 text-xs text-gold">
+                      Featured
+                    </span>
+                  )}
+                  {!operator.active && (
+                    <span className="rounded-full border border-crimson/30 px-2 py-0.5 text-xs text-crimson">
+                      Hidden
+                    </span>
+                  )}
                 </div>
                 <p className="mt-1 max-w-3xl text-sm text-muted">{operator.tagline}</p>
                 <p className="mt-2 text-xs text-muted">
-                  Order {operator.displayOrder} · {operator.category} · ₱{operator.price.amount.toLocaleString()} {operator.price.suffix} · {mediaCount} media
+                  Order {operator.displayOrder} · {operator.category} · ₱
+                  {operator.price.amount.toLocaleString()} {operator.price.suffix} · {mediaCount}{" "}
+                  media
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button disabled={busy} onClick={() => { setIsNew(false); setEditing(operator); }} className="rounded-md border border-line px-3 py-2 text-sm disabled:opacity-50">Edit</button>
-                <button disabled={busy} onClick={() => guarded(operator.id, () => catalog.updateOperator(operator.id, { ...operator, active: !operator.active }, passkey), operator.active ? "Operator hidden" : "Operator visible")} className="rounded-md border border-line px-3 py-2 text-sm disabled:opacity-50">{operator.active ? "Hide" : "Show"}</button>
-                <button disabled={busy} onClick={() => guarded(operator.id, () => catalog.updateOperator(operator.id, { ...operator, featured: !operator.featured }, passkey), operator.featured ? "Operator unfeatured" : "Operator featured")} className="rounded-md border border-line px-3 py-2 text-sm disabled:opacity-50">{operator.featured ? "Unfeature" : "Feature"}</button>
-                <button disabled={busy} onClick={() => setDeleteTarget(operator)} className="rounded-md border border-crimson/40 px-3 py-2 text-sm text-crimson disabled:opacity-50">Delete</button>
+                {operator.id === "social-media-operator" ? (
+                  <Link
+                    to="/admin/social-media"
+                    className="rounded-md border border-gold/40 px-3 py-2 text-sm text-gold"
+                  >
+                    Open workspace
+                  </Link>
+                ) : null}
+                <button
+                  disabled={busy}
+                  onClick={() => {
+                    setIsNew(false);
+                    setEditing(operator);
+                  }}
+                  className="rounded-md border border-line px-3 py-2 text-sm disabled:opacity-50"
+                >
+                  Edit
+                </button>
+                <button
+                  disabled={busy}
+                  onClick={() =>
+                    guarded(
+                      operator.id,
+                      () =>
+                        catalog.updateOperator(
+                          operator.id,
+                          { ...operator, active: !operator.active },
+                          passkey,
+                        ),
+                      operator.active ? "Operator hidden" : "Operator visible",
+                    )
+                  }
+                  className="rounded-md border border-line px-3 py-2 text-sm disabled:opacity-50"
+                >
+                  {operator.active ? "Hide" : "Show"}
+                </button>
+                <button
+                  disabled={busy}
+                  onClick={() =>
+                    guarded(
+                      operator.id,
+                      () =>
+                        catalog.updateOperator(
+                          operator.id,
+                          { ...operator, featured: !operator.featured },
+                          passkey,
+                        ),
+                      operator.featured ? "Operator unfeatured" : "Operator featured",
+                    )
+                  }
+                  className="rounded-md border border-line px-3 py-2 text-sm disabled:opacity-50"
+                >
+                  {operator.featured ? "Unfeature" : "Feature"}
+                </button>
+                <button
+                  disabled={busy}
+                  onClick={() => setDeleteTarget(operator)}
+                  className="rounded-md border border-crimson/40 px-3 py-2 text-sm text-crimson disabled:opacity-50"
+                >
+                  Delete
+                </button>
               </div>
             </article>
           );
@@ -307,7 +429,11 @@ function OperatorManager() {
         onClose={() => setDeleteTarget(null)}
         onDelete={(operator) => {
           setDeleteTarget(null);
-          guarded(operator.id, () => catalog.deleteOperator(operator.id, passkey), `${operator.name} deleted`);
+          guarded(
+            operator.id,
+            () => catalog.deleteOperator(operator.id, passkey),
+            `${operator.name} deleted`,
+          );
         }}
       />
     </div>

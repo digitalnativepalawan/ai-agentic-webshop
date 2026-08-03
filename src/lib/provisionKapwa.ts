@@ -17,7 +17,9 @@ export const provisionKapwa = createServerFn({ method: "POST" })
     // 1) Load the order (service role).
     const { data: order, error } = await supabaseAdmin
       .from("orders")
-      .select("id, order_ref, offer_id, offer_kind, offer_name, requester_name, requester_email, status")
+      .select(
+        "id, order_ref, offer_id, offer_kind, offer_name, requester_name, requester_email, status",
+      )
       .eq("id", data.orderId)
       .maybeSingle();
     if (error || !order) throw new Error("Order not found");
