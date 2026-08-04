@@ -2,8 +2,10 @@ import "@tanstack/react-start/server-only";
 
 import {
   socialContentResultSchema,
+  weeklySocialPlanResultSchema,
   type AgentRuntimeConfig,
   type SocialContentResult,
+  type WeeklySocialDraft,
 } from "./agent.schemas";
 
 export class AgentServiceError extends Error {
@@ -306,4 +308,144 @@ export async function generateSocialContent(
       "MALFORMED_RESPONSE",
     );
   return { result: normalizeResult(content), completedAt: new Date().toISOString() };
+}
+
+export async function generateWeeklyPlan(
+  config: AgentRuntimeConfig,
+  input: {
+    brand: string;
+    brief: string;
+    audience: string;
+    callToAction: string;
+    tone: string;
+    startDate: string;
+    postsPerDay: number;
+    channels: string[];
+    times: string[];
+  },
+) {
+  await testAgentService(config);
+  const total = input.postsPerDay * 7;
+  async function generateDay(dayOffset: number) {
+    const date = new Date(`${input.startDate}T12:00:00Z`);
+    date.setUTCDate(date.getUTCDate() + dayOffset);
+    const day = date.toISOString().slice(0, 10);
+    const prompt = `Create one day of a seven-day social content calendar.
+Brand: ${input.brand}
+Weekly goal: ${input.brief}
+Audience: ${input.audience}
+Call to action: ${input.callToAction || "Choose a natural, non-pushy call to action"}
+Tone: ${input.tone}
+Date: ${day}
+Posts for this day: ${input.postsPerDay}
+Times in Asia/Manila: ${input.times.slice(0, input.postsPerDay).join(", ")}
+Channels: ${input.channels.join(", ")}
+
+Return JSON only as {"drafts":[...]}. Create exactly ${input.postsPerDay} drafts for ${day}. Each draft requires date, time, theme, content, and image_brief. Keep each post to 45-75 words. Make each angle distinct and every claim grounded.`;
+    const request =
+      config.mode === "ollama"
+        ? {
+            url: `${normalizeBaseUrl(config.ollamaBaseUrl)}/api/chat`,
+            init: {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                model: config.model,
+                stream: false,
+                format: "json",
+                options: { temperature: 0.7, num_predict: 700 },
+                messages: [
+                  { role: "system", content: SYSTEM_PROMPT },
+                  { role: "user", content: prompt },
+                ],
+              }),
+            },
+          }
+        : {
+            url: "https://openrouter.ai/api/v1/chat/completions",
+            init: {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${config.openrouterKey.trim()}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://merqato.digital",
+                "X-Title": "merQato Social Media Operator",
+              },
+              body: JSON.stringify({
+                model: config.model,
+                stream: false,
+                response_format: { type: "json_object" },
+                max_tokens: 1000,
+                messages: [
+                  { role: "system", content: SYSTEM_PROMPT },
+                  { role: "user", content: prompt },
+                ],
+              }),
+            },
+          };
+    const response = await fetchWithTimeout(request.url, request.init, config.generationTimeoutMs);
+    if (!response.ok) {
+      throw new AgentServiceError(
+        `${config.mode === "ollama" ? "Ollama" : "OpenRouter"} day ${dayOffset + 1} failed (HTTP ${response.status}): ${(await response.text()).slice(0, 300)}`,
+        response.status === 401 || response.status === 403 ? "PROVIDER_AUTH" : "PROVIDER_FAILURE",
+        response.status,
+      );
+    }
+    const payload = (await response.json()) as {
+      message?: { content?: string };
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const content =
+      config.mode === "ollama" ? payload.message?.content : payload.choices?.[0]?.message?.content;
+    if (!content)
+      throw new AgentServiceError(
+        `The AI provider returned an empty plan for ${day}.`,
+        "MALFORMED_RESPONSE",
+      );
+    const parsed = extractJson(content) as { drafts?: unknown };
+    const normalized = Array.isArray(parsed.drafts)
+      ? parsed.drafts.map((draft, index) => {
+          const record =
+            draft && typeof draft === "object" ? (draft as Record<string, unknown>) : {};
+          const generatedCopy =
+            typeof draft === "string"
+              ? draft
+              : (record.content ?? record.caption ?? record.post ?? record.text);
+          return {
+            date: day,
+            time: input.times[index] ?? input.times[0],
+            theme: String(record.theme ?? record.title ?? `Day ${dayOffset + 1} post ${index + 1}`),
+            content: String(generatedCopy ?? ""),
+            image_brief: String(
+              record.image_brief ??
+                record.imageBrief ??
+                record.image ??
+                record.visual ??
+                `Create a grounded visual for ${input.brand} that matches this post.`,
+            ),
+          };
+        })
+      : parsed.drafts;
+    const drafts = weeklySocialPlanResultSchema.shape.drafts.element.array().parse(normalized);
+    if (drafts.length !== input.postsPerDay) {
+      throw new AgentServiceError(
+        `The agent returned ${drafts.length} posts for ${day} instead of ${input.postsPerDay}.`,
+        "MALFORMED_RESPONSE",
+      );
+    }
+    return drafts;
+  }
+  const drafts = (
+    await Promise.all(Array.from({ length: 7 }, (_, day) => generateDay(day)))
+  ).flat();
+  if (drafts.length !== total) {
+    throw new AgentServiceError(
+      `The agent returned ${drafts.length} posts instead of ${total}. Regenerate the week.`,
+      "MALFORMED_RESPONSE",
+    );
+  }
+  return {
+    drafts: drafts as WeeklySocialDraft[],
+    completedAt: new Date().toISOString(),
+  };
 }

@@ -44,6 +44,40 @@ export const socialContentResultSchema = z.object({
 
 export type SocialContentResult = z.infer<typeof socialContentResultSchema>;
 
+export const weeklySocialPlanRequestSchema = z.object({
+  passkey: z.string().min(1).max(2048),
+  config: agentRuntimeConfigSchema,
+  brand: z.string().min(1).max(120),
+  brief: z.string().min(1).max(3000),
+  audience: z.string().min(1).max(600),
+  callToAction: z.string().max(500).default(""),
+  tone: z.string().min(1).max(120),
+  startDate: z.string().date(),
+  postsPerDay: z.number().int().min(1).max(3),
+  channels: z
+    .array(z.enum(["facebook", "instagram"]))
+    .min(1)
+    .max(2),
+  times: z
+    .array(z.string().regex(/^\d{2}:\d{2}$/))
+    .min(1)
+    .max(3),
+});
+
+export const weeklySocialDraftSchema = z.object({
+  date: z.string().date(),
+  time: z.string().regex(/^\d{2}:\d{2}$/),
+  theme: z.string().min(1).max(160),
+  content: z.string().min(1).max(10_000),
+  image_brief: z.string().min(1).max(1000),
+});
+
+export const weeklySocialPlanResultSchema = z.object({
+  drafts: z.array(weeklySocialDraftSchema).min(7).max(21),
+});
+
+export type WeeklySocialDraft = z.infer<typeof weeklySocialDraftSchema>;
+
 export const agentHealthRequestSchema = z.object({
   passkey: z.string().min(1).max(2048),
   config: agentRuntimeConfigSchema,

@@ -4,6 +4,7 @@ import {
   agentHealthRequestSchema,
   ollamaModelsRequestSchema,
   socialContentRequestSchema,
+  weeklySocialPlanRequestSchema,
 } from "./agent.schemas";
 
 export const listAgentBrainModels = createServerFn({ method: "POST" })
@@ -32,4 +33,13 @@ export const generateSocialMediaContent = createServerFn({ method: "POST" })
     auth.requireAdminSession(data.passkey);
     const agent = await import("./agent.server");
     return agent.generateSocialContent(data.config, data);
+  });
+
+export const generateWeeklySocialPlan = createServerFn({ method: "POST" })
+  .validator((input: unknown) => weeklySocialPlanRequestSchema.parse(input))
+  .handler(async ({ data }) => {
+    const auth = await import("./admin-auth.server");
+    auth.requireAdminSession(data.passkey);
+    const agent = await import("./agent.server");
+    return agent.generateWeeklyPlan(data.config, data);
   });

@@ -13,6 +13,7 @@ import {
   Menu,
   PenLine,
   Settings2,
+  Sparkles,
   Users,
 } from "lucide-react";
 
@@ -23,6 +24,7 @@ import { PostComposer } from "./social-media/PostComposer";
 import { PostQueue } from "./social-media/PostQueue";
 import { PostizConnection, type PostizConnectionState } from "./social-media/PostizConnection";
 import { SocialConnections } from "./social-media/SocialConnections";
+import { WeeklyPlanner } from "./social-media/WeeklyPlanner";
 import {
   listPostizConnectedAccounts,
   listSocialPosts,
@@ -35,6 +37,7 @@ import { getAgentConfig, toAgentRuntimeConfig } from "@/lib/agentConfig";
 type View =
   | "dashboard"
   | "create"
+  | "weekly"
   | "calendar"
   | "posts"
   | "media"
@@ -52,6 +55,7 @@ const NAV: Array<{
 }> = [
   { id: "dashboard", label: "Dashboard", icon: Gauge, group: "main" },
   { id: "create", label: "Create Post", icon: PenLine, group: "main" },
+  { id: "weekly", label: "Plan a Week", icon: Sparkles, group: "main" },
   { id: "calendar", label: "Content Calendar", icon: CalendarDays, group: "main" },
   { id: "posts", label: "Posts", icon: FileText, group: "main" },
   { id: "media", label: "Media Library", icon: Image, group: "main" },
@@ -393,6 +397,13 @@ function SocialMediaManager() {
                 passkey={passkey}
                 integrations={integrations}
                 onPostCreated={refreshPosts}
+              />
+            ) : null}
+            {view === "weekly" ? (
+              <WeeklyPlanner
+                passkey={passkey}
+                integrations={integrations}
+                onScheduled={refreshPosts}
               />
             ) : null}
             {view === "calendar" ? <PostCalendar posts={posts} /> : null}
